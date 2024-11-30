@@ -1,0 +1,78 @@
+{
+  "name": "gpt-algotrading",
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "repository": "<Add your repository here>",
+  "license": "UNLICENSED",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@alpacahq/alpaca-trade-api": "^3.1.2",
+    "@sap/cds": "^8.5.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+  },
+  "scripts": {
+    "start": "cds run",
+    "start:docker": "docker-compose up",
+    "heroku-postbuild": "echo heroku postbuild skipped",
+    "heroku:pg:deploy": "PGHOST=localhost PGUSER=postgres PGPASSWORD=postgres heroku pg:push martingale postgresql-elliptical-20913 --app martingale-capm",
+    "pg:deploy": "npx cds-dbm deploy",
+    "watch-martingale-dashboard": "cds watch --open martingale-dashboard/webapp/index.html?sap-ui-xx-viewCache=false"
+  },
+  "engines": {
+    "node": "^16.15"
+  },
+  "eslintConfig": {
+    "extends": "eslint:recommended",
+    "env": {
+      "es2020": true,
+      "node": true,
+      "jest": true,
+      "mocha": true
+    },
+    "globals": {
+      "SELECT": true,
+      "INSERT": true,
+      "UPDATE": true,
+      "DELETE": true,
+      "CREATE": true,
+      "DROP": true,
+      "CDL": true,
+      "CQL": true,
+      "CXL": true,
+      "cds": true
+    },
+    "rules": {
+      "no-console": "off",
+      "require-atomic-updates": "off"
+    }
+  },
+  "sapux": [
+    "app/martingale-dashboard"
+  ],
+  "cds": {
+    "cov2ap": {
+      "plugin": true
+    },
+    "requires": {
+      "auth": {
+        "kind": "basic-auth",
+        "[heroku]": {
+          "users": {
+            "SHERNANG": {
+              "password": "Ogaitna$1234"
+            }
+          }
+        }
+      }
+    },
+    "log": {
+      "levels": {
+        "sqlite": "warn",
+        "cds": "warn"
+      }
+    }
+  }
+}
