@@ -1,7 +1,4 @@
 import Alpaca from '@alpacahq/alpaca-trade-api';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 class AlpacaService {
   constructor(alpaca) {
@@ -24,9 +21,6 @@ class AlpacaService {
       console.log("News Socket Disconnected");
     });
 
-    this._news_socket.on('message', async (msg) => {
-      console.log("Message:", msg);
-    });
   }
 
   static getInstance() {
@@ -49,6 +43,38 @@ class AlpacaService {
   get newsSocket() {
     return this._news_socket;
   }
+
+  _countWords(str) {
+    // Trim the string to remove leading/trailing spaces
+    // Split by spaces and filter out any empty strings (in case of multiple spaces)
+    const words = str.trim().split(/\s+/).filter(word => word.length > 0);
+    return words.length;
+  }
+
+  async getLatestNews(symbols, tokensLimit) {
+    let accumTokens = 0;
+
+    //Get latest 100 news
+    const news = await this.api.getNews({
+      symbols: symbols,
+      totalLimit: 100,
+      includeContent: true
+    });
+
+    //Filter up to "tokensLimit" words including Headline and Summary, to avoid overloading the GPT API
+    return news.filter((article) => {
+      //Get amount of words in Headline + Summary (or Content)
+      const words = this._countWords(article.Headline) + this._countWords(article.Summary);
+
+      //Adds to accumulated tokens for all news
+      accumTokens = accumTokens + words;
+
+      //Only return this news if the accumulated words so far are less than the total limit
+      return accumTokens < tokensLimit;
+    });
+
+  }
+
 }
 
 export default AlpacaService;
