@@ -22,7 +22,7 @@
     "watch-martingale-dashboard": "cds watch --open martingale-dashboard/webapp/index.html?sap-ui-xx-viewCache=false"
   },
   "engines": {
-    "node": "^16.15"
+    "node": "^18"
   },
   "eslintConfig": {
     "extends": "eslint:recommended",
