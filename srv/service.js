@@ -8,6 +8,27 @@ dotenv.config();
 const alpacaService = AlpacaService.getInstance();
 const openAIService = OpenAIService.getInstance();
 
+const fnScheduleClosePosition = async (symbol, clock) => {
+  //If the position has been opened. Set to close it 10 minutes before end of day
+  const msToNextClose = new Date(clock.next_close) - new Date() - 600000 /*600000ms = 10min */;
+
+  setTimeout(async () => {
+
+    console.log(`Closing position for ${symbol}`);
+
+    await alpacaService.api.closePosition(symbol);
+
+    console.log(`Position for ${symbol} closed`);
+
+  }, msToNextClose)
+
+  let closePositionDateTime = new Date();
+  closePositionDateTime.setTime(closePositionDateTime.getTime() + msToNextClose);
+
+  console.log(`Position scheduled to be closed in ${msToNextClose}ms at ${closePositionDateTime.toLocaleString('en-US', { timeZone: 'America/New_York' })}`);
+
+}
+
 export default async () => {
 
   // Subscribe to all News after connecting
@@ -32,7 +53,7 @@ export default async () => {
     "MSFT",
     "AMZN",
     "NVDA",
-    //"GOOGL",
+    "GOOGL",
     "TSLA",
     "GOOG",
     "BRK.B",
@@ -58,26 +79,27 @@ export default async () => {
   //Get Clock. 
   const clock = await alpacaService.api.getClock();
 
-  let startAfterMs = 0;
+  //Get All positions
+  const positions = await alpacaService.api.getPositions();
 
-  //If market is open, run inmediately (startAfterMs = 0). Otherwise calculate miliseconds to next open + 5 min to be sure.
-  if (!clock.is_open) {
-    startAfterMs = new Date(clock.next_open) - new Date() + 300000 /*5 min after opening */;
-  }
+  //This process only runs at the beginning of the NEXT day (next open) Next 9.30M
+
+  //Calculate miliseconds to next open + 5 min to be sure the market will be open
+  const startAfterMs = new Date(clock.next_open) - new Date() + 300000 /*5 min after opening */;
+
+  //Schedule closing open positions before market closes. This is done in case the dyno restarts in the middle of the day
+  positions.forEach((position) => fnScheduleClosePosition(position.symbol, clock));
 
   let startProcessDateTime = new Date();
   startProcessDateTime.setTime(startProcessDateTime.getTime() + startAfterMs);
 
-  console.log(`Process scheduled to run in ${startAfterMs}ms at ${startProcessDateTime.toLocaleString('en-US', { timeZone: 'America/New_York' })}`);
+  console.log(`Process scheduled to run in ${startAfterMs}ms at ${startProcessDateTime.toLocaleString('en-US', { timeZone: 'America/New_York' })}. Stocks ${symbols}`);
 
   //Run at opening of market, every 24hs
   cds.spawn({
     every: 86400000, //run every 24hs (24hs = 86400000ms)
     after: startAfterMs //Comment this line to run inmediately
   }, async () => {
-
-    //Close all previous positions (in case there are there). They should not be, but just in case
-    await alpacaService.api.closeAllPositions();
 
     //Run for each stock
     for (let index = 0; index < symbols.length; index++) {
@@ -135,23 +157,8 @@ export default async () => {
 
       console.log(`Order Created for ${symbol}. Side: ${bracketOrder.side}`)
 
-      //If the position has been opened. Set to close it 10 minutes before end of day
-      const msToNextClose = new Date(clock.next_close) - new Date() - 600000 /*600000ms = 10min */;
-
-      setTimeout(async () => {
-
-        console.log(`Closing position for ${symbol}`);
-
-        await alpacaService.api.closePosition(symbol);
-
-        console.log(`Position for ${symbol} closed`);
-
-      }, msToNextClose)
-
-      let closePositionDateTime = new Date();
-      closePositionDateTime.setTime(closePositionDateTime.getTime() + msToNextClose);
-
-      console.log(`Position scheduled to be closed in ${msToNextClose}ms at ${closePositionDateTime.toLocaleString('en-US', { timeZone: 'America/New_York' })}`);
+      //Schedule closing the position at end of day
+      fnScheduleClosePosition(symbol, clock);
 
     }
 
