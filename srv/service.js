@@ -24,7 +24,7 @@ class GPTAlgotrading {
     const clock = await alpacaService.api.getClock();
 
     //Calculate miliseconds to next open + 5 min to be sure the market will be open
-    const startAfterMs = 10000; new Date(clock.next_open) - new Date() + 300000 /*5 min after opening */;
+    const startAfterMs = new Date(clock.next_open) - new Date() + 300000 /*5 min after opening */;
     let startProcessDateTime = new Date();
     startProcessDateTime.setTime(startProcessDateTime.getTime() + startAfterMs);
 
