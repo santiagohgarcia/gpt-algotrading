@@ -72,8 +72,8 @@ export default async () => {
 
   //Run at opening of market, every 24hs
   cds.spawn({
-   // every: 86400000, //run every 24hs (24hs = 86400000ms)
-   // after: startAfterMs //Comment this line to run inmediately
+    every: 86400000, //run every 24hs (24hs = 86400000ms)
+    after: startAfterMs //Comment this line to run inmediately
   }, async () => {
 
     //Close all previous positions (in case there are there). They should not be, but just in case
