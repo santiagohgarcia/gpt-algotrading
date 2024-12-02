@@ -22,9 +22,13 @@ class GPTAlgotrading {
 
     //Get Clock. 
     const clock = await alpacaService.api.getClock();
+    let startAfterMs = 0; //For dev mode, execute instantly
 
-    //Calculate miliseconds to next open + 5 min to be sure the market will be open
-    const startAfterMs = new Date(clock.next_open) - new Date() + 300000 /*5 min after opening */;
+    //For production mode, Calculate miliseconds to next open + 5 min to be sure the market will be open
+    if(this.config.mode === "production") {
+      startAfterMs = new Date(clock.next_open) - new Date() + 300000 /*5 min after opening */;
+    }
+
     let startProcessDateTime = new Date();
     startProcessDateTime.setTime(startProcessDateTime.getTime() + startAfterMs);
 
@@ -130,7 +134,7 @@ class GPTAlgotrading {
 }
 
 const gptAlgotrading = new GPTAlgotrading({
-  mode: process.env.NODE_ENV,
+  mode: process.env.MODE,
   symbols: [
     "AAPL",
     "MSFT",

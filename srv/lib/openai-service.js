@@ -44,12 +44,13 @@ class OpenAIService {
             finalText += `\n\nCurrent Price at ${new Date().toISOString()}: ${latestBar.ClosePrice}`;
         }
 
-        //Latest Daily Prices section
+        //Latest Daily Bars section
         if(latestDailyBars){
-            finalText += `\n\nLast Year Prices by Day:`;
+            finalText += `\n\nLast Year Daily Bars in CSV format:`;
+            finalText += `\nDate,ClosePrice,HighPrice,LowPrice,OpenPrice,TradeCount,Volume,VWAP`;
             for await (const dailyBar of latestDailyBars) {
                 const dailyBarTime = new Date(dailyBar.Timestamp).toISOString().substring(0,10);
-                finalText += `\n${dailyBarTime}: ${dailyBar.ClosePrice}`;
+                finalText += `\n${dailyBarTime},${dailyBar.ClosePrice},${dailyBar.HighPrice},${dailyBar.LowPrice},${dailyBar.OpenPrice},${dailyBar.TradeCount},${dailyBar.Volume},${dailyBar.VWAP}`;
             }
         }
 
@@ -68,20 +69,7 @@ class OpenAIService {
             });
         }
 
-        //Final section for instructions and response format:
-        // finalText += 
-        // `\n\nUsing this information estimate the price of this crypto token for a future time frame. 
-        // Give your response in the following JSON format:
-        //     {
-        //         "side": <side of the position: long or short>,
-        //         "time_frame: <day, week or month>,
-        //         "take_profit_price": <take profit price> as Number,
-        //         "stop_loss_price: <stop loss price> as Number,
-        //         "reason": <reason for the prediction in no more than 1000 characters> as String,
-        //         "certainty": <score how certain is this analysis from 1 to 100> as Integer
-        //     }`;
-
-        console.log("Requesting estimation using system text:", systemContextText);
+        //console.log("Requesting estimation using system text:", systemContextText);
         console.log("Requesting bracket estimate to GPT with:", finalText);
 
         const completion = await this.api.chat.completions.create({
