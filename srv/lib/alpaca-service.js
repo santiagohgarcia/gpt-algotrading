@@ -44,34 +44,24 @@ class AlpacaService {
     return this._news_socket;
   }
 
-  _countWords(str) {
-    // Trim the string to remove leading/trailing spaces
-    // Split by spaces and filter out any empty strings (in case of multiple spaces)
-    const words = str.trim().split(/\s+/).filter(word => word.length > 0);
-    return words.length;
-  }
+  async getTopAssetsWithMoreVolume(top) {
+    // Get all active assets from Alpaca API
+    const assets = await this.api.getAssets({ status: 'active', asset_class: "us_equity" })
 
-  async getLatestNews(symbols, tokensLimit) {
-    let accumTokens = 0;
+    const tradeableSymbols = assets
+      .filter(asset => asset.tradable)
+      .map(asset => asset.symbol);
 
-    //Get latest 100 news
-    const news = await this.api.getNews({
-      symbols: symbols,
-      totalLimit: 100,
-      includeContent: true
-    });
+    const snapshots = await this.api.getSnapshots(tradeableSymbols);
 
-    //Filter up to "tokensLimit" words including Headline and Summary, to avoid overloading the GPT API
-    return news.filter((article) => {
-      //Get amount of words in Headline + Summary (or Content)
-      const words = this._countWords(article.Headline) + this._countWords(article.Summary);
-
-      //Adds to accumulated tokens for all news
-      accumTokens = accumTokens + words;
-
-      //Only return this news if the accumulated words so far are less than the total limit
-      return accumTokens < tokensLimit;
-    });
+    // Filter assets based on criteria
+    return snapshots
+      .filter(s => !!s.DailyBar?.Volume)
+      .sort((a, b) => {
+        return Number(b.DailyBar?.Volume) - Number(a.DailyBar?.Volume);
+      })
+      .slice(0, top)
+      .map(snapshot => snapshot.symbol);
 
   }
 

@@ -8,7 +8,7 @@ dotenv.config();
 const alpacaService = AlpacaService.getInstance();
 const openAIService = OpenAIService.getInstance();
 
-export default () => {
+export default async () => {
 
   // Subscribe to all News after connecting
   // alpacaService.newsSocket.onConnect(() => {
@@ -25,86 +25,134 @@ export default () => {
   //   });
   // });
 
-  // Example news
-  const symbol = "TSLA";
+  // Example Stocks to analyze
+  // const topVolumeStocks = await alpacaService.getTopAssetsWithMoreVolume(10);
+  const symbols = [
+    "AAPL",
+    "MSFT",
+    "AMZN",
+    "NVDA",
+    "GOOGL",
+    "TSLA",
+    "GOOG",
+    "BRK.B",
+    "META",
+    "UNH",
+    "XOM",
+    "LLY",
+    "JPM",
+    "JNJ",
+    "V",
+    "PG",
+    "MA",
+    "AVGO",
+    "HD",
+    "CVX",
+    "MRK",
+    "ABBV",
+    "COST",
+    "PEP",
+    "ADBE"
+  ];
 
-  cds.spawn({}, async () => {
+  //Get Clock. 
+  const clock = await alpacaService.api.getClock();
 
-    const oneYearAgo = new Date()
-    oneYearAgo.setFullYear(currentDate.getFullYear() - 1);
+  let startAfterMs = 0;
 
-    const oneMonthAgo = new Date()
-    oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
+  //If market is open, run inmediately (startAfterMs = 0). Otherwise calculate miliseconds to next open + 5 min to be sure.
+  if (!clock.is_open) {
+    startAfterMs = new Date(clock.next_open) - new Date() + 300000 /*5 min after opening */;
+  }
 
-    //Get Clock
-    const clock = await alpacaService.api.getClock();
+  let startProcessDateTime = new Date();
+  startProcessDateTime.setTime(startProcessDateTime.getTime() + startAfterMs);
 
-    //Check if market is open. If not, do nothing
-    if(!clock.is_open){
-      console.error(`Symbol ${symbol} is not tradeable`);
-      return;
-    }
+  console.log(`Process scheduled to run in ${startAfterMs}ms at ${startProcessDateTime.toLocaleString('en-US', { timeZone: 'America/New_York' })}`);
 
-    //Get Current Asset
-    const asset = await alpacaService.api.getAsset(symbol);
+  //Run at opening of market, every 24hs
+  cds.spawn({
+    //every: 86400000, //run every 24hs (24hs = 86400000ms)
+    //after: startAfterMs //Comment this line to run inmediately
+  }, async () => {
 
-    //Check if symbol is tradable
-    if (!asset.tradable) {
-      console.error(`Symbol ${symbol} is not tradeable`);
-      return;
-    }
+    //Close all previous positions (in case there are there). They should not be, but just in case
+    await alpacaService.api.closeAllPositions();
 
-    //Get information needed to send to GPT
+    //Run for each stock
+    for (let index = 0; index < symbols.length; index++) {
 
-    //Get Latest Price Bar
-    const latestBar = await alpacaService.api.getLatestBar(symbol);
+      const symbol = symbols[index];
 
-    //Get historic dayly prices of last 1 month
-    const latestDailyBars = alpacaService.api.getBarsV2(symbol, {
-      start: oneMonthAgo.toISOString(),
-      timeframe: alpacaService.api.newTimeframe(1, alpacaService.api.timeframeUnit.DAY),
-    });
+      const oneYearAgo = new Date();
+      oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
-    //Get Latest News
-    const latestNews = await alpacaService.getLatestNews([symbol], 10000)
+      //Get Current Asset
+      const asset = await alpacaService.api.getAsset(symbol);
 
-    //Get Corporate Actions
-    const corporateActions = await alpacaService.api.corporateActions([symbol], {
-      start: oneYearAgo.toISOString().substring(0,10)
-    })
+      //Check if symbol is tradable
+      if (!asset.tradable) {
+        console.error(`Symbol ${symbol} is not tradeable`);
+        return;
+      }
 
-    //OPENAI
-    //Get Bracket order estimation from GPT
-    const bracketOrder = await openAIService.getBracketOrderEstimateFor({
-      symbol: symbol,
-      latestBar: latestBar,
-      latestDailyBars: latestDailyBars,
-      corporateActions: corporateActions,
-      news: latestNews
-    });
+      //Get information needed to send to GPT
 
-    //Create Bracket order (only LONG supported for now)
-    if (bracketOrder.side === "long") {
+      //Get Latest Price Bar
+      const latestBar = await alpacaService.api.getLatestBar(symbol);
 
-      await alpacaService.api.createOrder({
-        side: "buy",
-        symbol: symbol,
-        type: "market",
-        order_class: "bracket",
-        qty: 1,
-        nested: true,
-        time_in_force: "gtc",
-        take_profit: {
-          limit_price: bracketOrder.take_profit_price
-        },
-        stop_loss: {
-          stop_price: bracketOrder.stop_loss_price,
-          // limit_price: (bracketOrder.stop_loss_price * 0.99).toFixed(2)
-        }
+      //Get historic dayly prices of last year
+      const latestDailyBars = alpacaService.api.getBarsV2(symbol, {
+        start: oneYearAgo.toISOString(),
+        timeframe: alpacaService.api.newTimeframe(1, alpacaService.api.timeframeUnit.DAY),
+        sort: "desc"
       });
 
-      console.log(`Order Created for ${symbol}. Take Profit ${bracketOrder.take_profit_price}. Stop Loss: ${bracketOrder.stop_loss_price}`)
-    
+      //Get Latest News
+      const latestNews = await alpacaService.api.getNews({
+        symbols: [symbol],
+        totalLimit: 50,
+        includeContent: false
+      });
+
+      //OPENAI
+      //Get Bracket order estimation from GPT
+      const bracketOrder = await openAIService.getDailyEstimationFor({
+        symbol: symbol,
+        latestBar: latestBar,
+        latestDailyBars: latestDailyBars,
+        news: latestNews
+      });
+
+      //Create Order (long or short)
+      await alpacaService.api.createOrder({
+        side: bracketOrder.side === "long" ? "buy" : "sell",
+        symbol: symbol,
+        type: "market",
+        qty: 1,
+        time_in_force: "gtc"
+      });
+
+      console.log(`Order Created for ${symbol}. Side: ${bracketOrder.side}`)
+
+      //If the position has been opened. Set to close it 10 minutes before end of day
+      const msToNextClose = new Date(clock.next_close) - new Date() - 600000 /*600000ms = 10min */;
+
+      setTimeout(async () => {
+
+        console.log(`Closing position for ${symbol}`);
+
+        await alpacaService.api.closePosition(symbol);
+
+        console.log(`Position for ${symbol} closed`);
+
+      }, msToNextClose)
+
+      let closePositionDateTime = new Date();
+      closePositionDateTime.setTime(closePositionDateTime.getTime() + msToNextClose);
+
+      console.log(`Position scheduled to be closed in ${msToNextClose}ms at ${closePositionDateTime.toLocaleString('en-US', { timeZone: 'America/New_York' })}`);
+
     }
 
   });

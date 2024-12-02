@@ -17,16 +17,27 @@ class OpenAIService {
         return this._openai;
     }
 
-    async getBracketOrderEstimateFor(params) {
+    async getDailyEstimationFor(params) {
 
         const symbol = params.symbol;
         const latestBar = params.latestBar;
         const latestDailyBars = params.latestDailyBars;
         const news = params.news;
 
-        const systemContextText = "You are a stock and financial analyzer dedicated to estimate future prices of assets according to given information";
+        const systemContextText = 
+        `You are a stock market analyst. Current timestamp is ${new Date().toISOString()}
+        You will be provided with a stock current price, last year daily prices and latest 50 news articles about that stock.
+        Your task is to use this information to estimate if the price will go up (long position) or down (short position) by the end of the day.
+        
+        Give your response in the following JSON format:
+            {
+                "symbol": <current stock symbol being analyzed>,
+                "side": <side of the position: long or short>,
+                "reason": <reason for the prediction in no more than 1000 characters> as String,
+            }`;
 
-        let finalText = `Given the following information about ${symbol}:`
+        let finalText = 
+        `Information about ${symbol}:`
 
         //Current Price Section
         if (latestBar.ClosePrice) {
@@ -35,12 +46,11 @@ class OpenAIService {
 
         //Latest Daily Prices section
         if(latestDailyBars){
-            finalText += `\n\nLast 30 Day Prices:`;
+            finalText += `\n\nLast Year Prices by Day:`;
             for await (const dailyBar of latestDailyBars) {
                 const dailyBarTime = new Date(dailyBar.Timestamp).toISOString().substring(0,10);
                 finalText += `\n${dailyBarTime}: ${dailyBar.ClosePrice}`;
             }
-            
         }
 
         //News Section
@@ -59,16 +69,19 @@ class OpenAIService {
         }
 
         //Final section for instructions and response format:
-        finalText += `\n\nUsing this information estimate the price of this crypto token for a future time frame. Give your response in the following JSON format
-            {
-                "side": <side of the position: long or short>,
-                "time_frame: <minute, day, week, month or year>,
-                "take_profit_price": <take profit price> as Number,
-                "stop_loss_price: <stop loss price> as Number,
-                "reason": <reason for the prediction in no more than 1000 characters> as String,
-                "certainty": <score how certain is this analysis from 1 to 100> as Integer
-            }`;
+        // finalText += 
+        // `\n\nUsing this information estimate the price of this crypto token for a future time frame. 
+        // Give your response in the following JSON format:
+        //     {
+        //         "side": <side of the position: long or short>,
+        //         "time_frame: <day, week or month>,
+        //         "take_profit_price": <take profit price> as Number,
+        //         "stop_loss_price: <stop loss price> as Number,
+        //         "reason": <reason for the prediction in no more than 1000 characters> as String,
+        //         "certainty": <score how certain is this analysis from 1 to 100> as Integer
+        //     }`;
 
+        console.log("Requesting estimation using system text:", systemContextText);
         console.log("Requesting bracket estimate to GPT with:", finalText);
 
         const completion = await this.api.chat.completions.create({
