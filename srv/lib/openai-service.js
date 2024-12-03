@@ -62,8 +62,9 @@ class OpenAIService {
             });
         }
 
-        //console.log("Requesting estimation using system text:", systemContextText);
-        if (symbol === "AAPL") { //Just print this for one stock to check if the format is correct. 
+        //Just print this for one stock to check if the format is correct. 
+        if (symbol === "AAPL") { 
+            console.log("Requesting estimation using system text:", systemContextText);
             console.log("Requesting bracket estimate to GPT with:", finalText);
         }
 
