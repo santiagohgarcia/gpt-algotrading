@@ -11,7 +11,8 @@
     "@sap/cds": "^8.5.0",
     "@sap/cds-dk": "^8.5.0",
     "dotenv": "^16.4.5",
-    "openai": "^4.73.1"
+    "openai": "^4.73.1",
+    "technicalindicators": "^3.1.0"
   },
   "scripts": {
     "start": "cds run",
@@ -26,8 +27,12 @@
   },
   "eslintConfig": {
     "extends": "eslint:recommended",
+    "parserOptions": {
+      "ecmaVersion": 2022,
+      "sourceType": "module"
+    },
     "env": {
-      "es2020": true,
+      "es6": true,
       "node": true,
       "jest": true,
       "mocha": true

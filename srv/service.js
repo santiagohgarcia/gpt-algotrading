@@ -1,12 +1,14 @@
-import cds from '@sap/cds';
+// import cds from '@sap/cds';
 import AlpacaService from './lib/alpaca-service.js';
 import OpenAIService from './lib/openai-service.js';
+import IndicatorsService from './lib/indicators-service.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
 const alpacaService = AlpacaService.getInstance();
 const openAIService = OpenAIService.getInstance();
+const indicatorsService = IndicatorsService.getInstance();
 
 class GPTAlgotrading {
 
@@ -26,7 +28,7 @@ class GPTAlgotrading {
 
     //For production mode, Calculate miliseconds to next open + 5 min to be sure the market will be open
     if(this.config.mode === "production") {
-      startAfterMs = new Date(clock.next_open) - new Date() + 300000 /*5 min after opening */;
+      startAfterMs = new Date(clock.next_open) - new Date() - 600000 /*10 min BEFORE opening */;
     }
 
     let startProcessDateTime = new Date();
@@ -39,6 +41,14 @@ class GPTAlgotrading {
 
     console.log(`Process scheduled to run in ${startAfterMs}ms at ${startProcessDateTime.toLocaleString('en-US', { timeZone: 'America/New_York' })}. Stocks ${this.config.symbols}`);
 
+  }
+
+  async _asyncGeneratorToArray(generator) {
+    const result = [];
+    for await (const item of generator) {
+      result.push(item);
+    }
+    return result;
   }
 
   async openPositions() {
@@ -68,11 +78,16 @@ class GPTAlgotrading {
       const latestBar = await alpacaService.api.getLatestBar(symbol);
 
       //Get historic dayly prices of last year
-      const latestDailyBars = alpacaService.api.getBarsV2(symbol, {
+      let latestDailyBarsAsync = alpacaService.api.getBarsV2(symbol, {
         start: oneYearAgo.toISOString(),
         timeframe: alpacaService.api.newTimeframe(1, alpacaService.api.timeframeUnit.DAY),
         sort: "desc"
       });
+
+      let latestDailyBars = await this._asyncGeneratorToArray(latestDailyBarsAsync);
+      
+      //Add indicators to bars
+      latestDailyBars = await indicatorsService.addIndicatorsToBars(latestDailyBars);
 
       //Get Latest News
       const latestNews = await alpacaService.api.getNews({
