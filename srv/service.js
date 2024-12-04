@@ -20,29 +20,31 @@ class GPTAlgotrading {
 
   //This process only runs at the beginning of the NEXT day (next open) Next 9.30AM.
   //Schedule opening the positions at the begining of the day
-  async scheduleOpenPositions() {
+  async scheduleRebalancePortfolio() {
 
     //Get Clock. 
     const clock = await alpacaService.api.getClock();
     let startAfterMs = 0; //For dev mode, execute instantly
 
     //For production mode, Calculate miliseconds to next open + 5 min to be sure the market will be open
-    if(this.config.mode === "production") {
+    if (this.config.mode === "production") {
       startAfterMs = new Date(clock.next_open) - new Date() - 600000 /*10 min BEFORE opening */;
     }
 
+    //Run at opening of market
+    setTimeout(async () => {
+      await this.rebalancePortfolio();
+    }, startAfterMs);
+
+    //Log scheduling
     let startProcessDateTime = new Date();
     startProcessDateTime.setTime(startProcessDateTime.getTime() + startAfterMs);
 
-    //Run at opening of market
-    setTimeout(async () => { 
-      await this.openPositions();
-    }, startAfterMs);
-
-    console.log(`Process scheduled to run in ${startAfterMs}ms at ${startProcessDateTime.toLocaleString('en-US', { timeZone: 'America/New_York' })}. Stocks ${this.config.symbols}`);
+    console.log(`Rebalance Portfolio scheduled to run in ${startAfterMs}ms at ${startProcessDateTime.toLocaleString('en-US', { timeZone: 'America/New_York' })}. Stocks ${this.config.symbols}`);
 
   }
 
+  //Utils function to convert async generator into Array
   async _asyncGeneratorToArray(generator) {
     const result = [];
     for await (const item of generator) {
@@ -51,111 +53,120 @@ class GPTAlgotrading {
     return result;
   }
 
-  async openPositions() {
+  async getAllDataForSymbol(symbol) {
 
+    //Get Latest Price Bar
+    const latestBar = await alpacaService.api.getLatestBar(symbol);
+
+    //Get historic dayly prices of last year
+
+    //Calculate {this.config.monthsAgoBars} months ago date
+    const monthsAgoDate = new Date();
+    monthsAgoDate.setMonth(monthsAgoDate.getMonth() - this.config.monthsAgoBars);
+
+    //Get {this.config.monthsAgoBars} months ago daily bars
+    const latestDailyBarsAsync = alpacaService.api.getBarsV2(symbol, {
+      start: monthsAgoDate.toISOString(),
+      timeframe: alpacaService.api.newTimeframe(1, alpacaService.api.timeframeUnit.DAY),
+      sort: "desc"
+    });
+
+    //Convert latest daily bars to array
+    const latestDailyBars = await this._asyncGeneratorToArray(latestDailyBarsAsync);
+
+    //Add indicators to bars
+    const latestDailyBarsWithIndicators = await indicatorsService.addIndicatorsToBars(latestDailyBars);
+
+    //Get Latest News
+    const latestNews = await alpacaService.api.getNews({
+      symbols: [symbol],
+      totalLimit: this.config.latestNewsCount,
+      includeContent: false
+    });
+
+    //Returns an object with the symbol and the latest news, bars, indicators
+    return {
+      symbol: symbol,
+      latestBar: latestBar,
+      latestDailyBarsWithIndicators: latestDailyBarsWithIndicators,
+      news: latestNews
+    };
+  }
+
+  async rebalancePortfolio() {
+
+    //Get Symbols to analyze
     const symbols = this.config.symbols;
 
-    //Run for each stock
-    for (let index = 0; index < symbols.length; index++) {
+    //Get all data for symbols from different sources (prices, indicators, news)
+    const allDataForSymbols = await Promise.all(
+      symbols.map(async (symbol) => await this.getAllDataForSymbol(symbol)
+    ));
 
-      const symbol = symbols[index];
+    const estimationsForSymbols = await Promise.all(
+      symbols.map(async (symbol) => await this.getAllDataForSymbol(symbol)
+    ));
+    
+    //Ask AI for a portfolio estimation ({symbol, side, percentage, reasoning})
+    const portfolioEstimate = await openAIService.getPortfolioEstimation(allDataForSymbols);
 
-      const oneYearAgo = new Date();
-      oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    //Get Current Positions
+    const positions = await alpacaService.api.getPositions();
+    let portfolioTotal = this.config.defaultPortfolioTotal;
 
-      //Get Current Asset
-      const asset = await alpacaService.api.getAsset(symbol);
+    //If there are open positions, take the total market value as the portfolio total, otherwise default value
+    if (positions.length > 0) {
+      portfolioTotal = positions.reduce((total, position) => total + position.MarketValue, 0);
+    }
 
-      //Check if symbol is tradable
-      if (!asset.tradable) {
-        console.error(`Symbol ${symbol} is not tradeable`);
-        return;
+    //Rebalance Portfolio with Alpaca Orders
+    const rebalancePortfolioOrdersPromises = portfolioEstimate.map(symbolEstimate => {
+      const symbol = symbolEstimate.symbol;
+      const currentPosition = positions.find(position => position.symbol === symbolEstimate.Symbol);
+      const currentAmt = currentPosition.MarketValue || 0;
+      const estimateSide = symbolEstimate.side;
+
+      //Get estimated amount. If it is SHORT position, it is a negative amount
+      const estiamateAmt = ( portfolioTotal * symbolEstimate.percentage / 100 ) * (estimateSide === "long" ? 1 : -1);
+
+      //If the algorithm assigned 0 allocation for this symbol, simply close the position
+      if(estiamateAmt === 0) {
+        return alpacaService.api.closePosition(symbol);
       }
 
-      //Get information needed to send to GPT
+      //Calculate the delta amount between the current value of the position and the estimated for today
+      //If delta is negative, we need to sell.
+      //If delta is positive, we need to buy more.
+      const deltaAmt = estiamateAmt - currentAmt;
 
-      //Get Latest Price Bar
-      const latestBar = await alpacaService.api.getLatestBar(symbol);
+      //If no changes to estimation, return resolved promise with no order
+      if(deltaAmt === 0) {
+        return Promise.resolve();
+      }
 
-      //Get historic dayly prices of last year
-      let latestDailyBarsAsync = alpacaService.api.getBarsV2(symbol, {
-        start: oneYearAgo.toISOString(),
-        timeframe: alpacaService.api.newTimeframe(1, alpacaService.api.timeframeUnit.DAY),
-        sort: "desc"
-      });
-
-      let latestDailyBars = await this._asyncGeneratorToArray(latestDailyBarsAsync);
-      
-      //Add indicators to bars
-      latestDailyBars = await indicatorsService.addIndicatorsToBars(latestDailyBars);
-
-      //Get Latest News
-      const latestNews = await alpacaService.api.getNews({
-        symbols: [symbol],
-        totalLimit: 50,
-        includeContent: false
-      });
-
-      //OPENAI
-      //Get Bracket order estimation from GPT
-      const estimate = await openAIService.getDailyEstimationFor({
-        symbol: symbol,
-        latestBar: latestBar,
-        latestDailyBars: latestDailyBars,
-        news: latestNews
-      });
-
-      //Create Order (long or short)
-      await alpacaService.api.createOrder({
-        side: estimate.side === "long" ? "buy" : "sell",
+      //Create Order
+      return alpacaService.api.createOrder({
+        side: deltaAmt > 0 ? "buy" : "sell", 
         symbol: symbol,
         type: "market",
-        qty: 1,
+        notional: Math.abs(deltaAmt),
         time_in_force: "gtc"
       });
 
-      console.log(`Order Created for ${symbol}. Side: ${estimate.side}`)
+    })
 
-    }
+    return await Promise.all(rebalancePortfolioOrdersPromises);
 
-  }
-
-  async shceduleClosePositions() {
-
-    const clock = await alpacaService.api.getClock();
-
-    //If the position has been opened. Set to close it 10 minutes before end of day
-    const msToNextClose = new Date(clock.next_close) - new Date() - 600000 /*600000ms = 10min */;
-
-    setTimeout(async () => {
-      await this.closePositions();
-    }, msToNextClose)
-
-    let closePositionDateTime = new Date();
-    closePositionDateTime.setTime(closePositionDateTime.getTime() + msToNextClose);
-
-    console.log(`Positions scheduled to be closed in ${msToNextClose}ms at ${closePositionDateTime.toLocaleString('en-US', { timeZone: 'America/New_York' })}`);
-
-  }
-
-  async closePositions() {
-    console.log(`Closing positions`);
-
-    await alpacaService.api.closeAllPositions();
-
-    console.log(`Positions closed`);
   }
 
 }
 
 const gptAlgotrading = new GPTAlgotrading({
   mode: process.env.MODE,
+  defaultPortfolioTotal: 10000, //TODO: Get this from somewhere
+  monthsAgoBars: 1,
+  latestNewsCount: 20,
   symbols: [
-    "AAPL",
-    "MSFT",
-    "AMZN",
-    "NVDA",
-    "GOOGL",
     "TSLA",
     "GOOG",
     "BRK.B",
@@ -164,7 +175,9 @@ const gptAlgotrading = new GPTAlgotrading({
     "XOM",
     "LLY",
     "JPM",
+    "MSFT",
     "JNJ",
+    "AAPL",
     "V",
     "PG",
     "MA",
@@ -175,14 +188,14 @@ const gptAlgotrading = new GPTAlgotrading({
     "ABBV",
     "COST",
     "PEP",
-    "ADBE"
-  ]
+    "ADBE",
+    "AMZN",
+    "NVDA",
+    "GOOGL"
+  ] //TODO: Get list of stocks from somewhere else
 })
 
 //This is a daily algorithm
 
 //Schedule opining positions at next open of the market
-gptAlgotrading.scheduleOpenPositions();
-
-//Schedule closing positions at market closing
-gptAlgotrading.shceduleClosePositions();
+gptAlgotrading.scheduleRebalancePortfolio();

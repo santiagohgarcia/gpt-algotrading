@@ -12,7 +12,8 @@
     "@sap/cds-dk": "^8.5.0",
     "dotenv": "^16.4.5",
     "openai": "^4.73.1",
-    "technicalindicators": "^3.1.0"
+    "technicalindicators": "^3.1.0",
+    "tiktoken": "^1.0.17"
   },
   "scripts": {
     "start": "cds run",
