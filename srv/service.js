@@ -28,7 +28,7 @@ class GPTAlgotrading {
 
     //For production mode, Calculate miliseconds to next open + 5 min to be sure the market will be open
     if(this.config.mode === "production") {
-      startAfterMs = new Date(clock.next_open) - new Date() - 600000 /*10 min BEFORE opening */;
+      startAfterMs = new Date(clock.next_open) - new Date() + 300000 /*5 min AFTER opening */;
     }
 
     let startProcessDateTime = new Date();
