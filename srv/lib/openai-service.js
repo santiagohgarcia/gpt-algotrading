@@ -1,5 +1,4 @@
 import OpenAI from "openai";
-import tiktoken from "tiktoken";
 
 class OpenAIService {
     constructor() {
@@ -18,21 +17,24 @@ class OpenAIService {
         return this._openai;
     }
 
-    async getPortfolioEstimation(symbolsData) {
+    async getEstimationForSymbol(symbolData) {
 
-        //System Message
+        const symbol = symbolData.symbol;
+
         const systemContextText =
-            `You are a stock market analyst. Current timestamp is ${new Date().toISOString()}
-        You will be provided with a list of stocks and last relevant information like current price, last daily prices, technical indicators and latest 10 news articles about each stock.
-        The information for each stock will be divided by XML tags with the name of the stock (E.g. <AAPL>...</AAPL>)
-        Your task is to use this information to estimate if each stock price will go up (LONG position) or down (SHORT position) by the end of the current day.
-        Additionally, you will assign a percentage of distribution of each stock in a portfolio. Allocate greater percentage to the stocks that you are most certain about the estimated behaviour.
-        If you are unsure about a stock behaviour for the day, you can set 0 as portfolio percentage to that stock.
-        All percentage values should sum up to 1.00(100%). 
-        Give your response in JSON format. All stocks enclosed by XML tags must have a record in the response.`;
+        `You are a stock market analyst. Current timestamp is ${new Date().toISOString()}
+        You will be provided with a stock current price, last six months daily bars, including close prices, technical indicators like RSI and SMA and latest 20 news articles about that stock.
+        Your task is to use this information to predict if the price will go up (long position) or down (short position) by the end of the day.
+        Indicate how certain you are about the prediction with a number from 0 to 100. If you are not sure you can set 0.`;
 
-        //User text (all symbols data separated by XML tags)
-        const userText = symbolsData.map(this.getTextForSymbolData).join(`\n\n`);
+        //Gets Symbol Data in Text format to send to AI
+        const userText = this.getTextForSymbolData(symbolData);
+
+        //Just print this for one stock to check if the format is correct. 
+        if (symbol === "AAPL") { 
+            console.log("Requesting estimation using system text:", systemContextText);
+            console.log("Requesting bracket estimate to GPT with:", userText);
+        }
 
         const completion = await this.api.chat.completions.create({
             model: process.env.OPENAI_MODEL,
@@ -53,41 +55,36 @@ class OpenAIService {
                     schema: {
                         type: "object",
                         properties: {
-                            estimations: {
-                                description: "An array of stock estimations. Each record represents a stock enclosed by XML tags in the input. Every stock in the input must have a record in this array and the sum of the percentage fields should add up to 100.",
-                                type: "array",
-                                items: {
-                                    type: "object",
-                                    properties: {
-                                        symbol: {
-                                            description: "Stock symbol",
-                                            type: "string"
-                                        },
-                                        side: {
-                                            description: "Side of the position: long or short (lowercase)",
-                                            type: "string"
-                                        },
-                                        percentage: {
-                                            description: "Percentage allocation of this symbol in the portfolio. From 0.00 to 1.00",
-                                            type: "number"
-                                        }
-                                    },
-                                    additionalProperties: false
-                                }
+                            symbol: {
+                                description: "Current stock symbol being analyzed",
+                                type: "string"
+                            },
+                            side: {
+                                description: "Side of the position (long or short)",
+                                type: "string"
+                            },
+                            reasoning: {
+                                description: "Reason for the prediction in not more than 1000 characters",
+                                type: "string"
+                            },
+                            certanty: {
+                                description: "Certainty for this prediction expressed as a number from 0 to 100",
+                                type: "number"
                             }
                         },
-                        required: ["estimations"],
                         additionalProperties: false
                     }
                 }
             }
+
         });
 
-        const portfolioEstimation = JSON.parse(completion.choices[0].message.content);
+        //Get response and parse it to JSON object
+        let estimation = JSON.parse(completion.choices[0].message.content);
 
-        console.log("Estimate for received as:", portfolioEstimation);
+        console.log("Estimate for received as:", estimation);
 
-        return portfolioEstimation;
+        return estimation;
 
     }
 
@@ -98,7 +95,7 @@ class OpenAIService {
         const latestDailyBarsWithIndicators = symbolData.latestDailyBarsWithIndicators;
         const news = symbolData.news;
 
-        let finalText = `<${symbol}>\nInformation for ${symbol}:`
+        let finalText = `Information for ${symbol}:`
 
         //Current Price Section
         if (latestBar.ClosePrice) {
@@ -132,7 +129,7 @@ class OpenAIService {
             });
         }
 
-        finalText += `\n</${symbol}>`
+        // finalText += `\n</${symbol}>`
 
         return finalText;
 

@@ -23,9 +23,23 @@ class AlpacaService {
     return this._alpaca;
   }
 
-  get newsSocket() {
-    return this._news_socket;
-  }
+  async closePositionAndWait(symbol){
+
+    return new Promise(async (res) => {
+        //Wait until all orders are closed (have 0 open orders)
+        await this.closePosition(symbol);
+
+        const positionsCancelIntervalId = setInterval(async () => {
+            const positions = await this.api.getPositions();
+            const symbolPositions = positions.filter(position => position.symbol === symbol);
+            if(symbolPositions.length === 0) {
+                res();
+                clearInterval(positionsCancelIntervalId);
+            }
+        },5000)
+        
+    });
+}
 
 }
 

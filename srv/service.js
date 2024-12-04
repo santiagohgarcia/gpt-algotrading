@@ -10,6 +10,10 @@ const alpacaService = AlpacaService.getInstance();
 const openAIService = OpenAIService.getInstance();
 const indicatorsService = IndicatorsService.getInstance();
 
+const sleep = (ms) => new Promise((resolve) => {
+  setTimeout(resolve, ms)
+});
+
 class GPTAlgotrading {
 
   constructor(config) {
@@ -26,9 +30,9 @@ class GPTAlgotrading {
     const clock = await alpacaService.api.getClock();
     let startAfterMs = 0; //For dev mode, execute instantly
 
-    //For production mode, Calculate miliseconds to next open + 5 min to be sure the market will be open
+    //For production mode, Calculate miliseconds to next open + 10 min to be sure the market will be open
     if (this.config.mode === "production") {
-      startAfterMs = new Date(clock.next_open) - new Date() - 600000 /*10 min BEFORE opening */;
+      startAfterMs = new Date(clock.next_open) - new Date() + 600000 /*10 min AFTER opening */;
     }
 
     //Run at opening of market
@@ -98,64 +102,95 @@ class GPTAlgotrading {
     //Get Symbols to analyze
     const symbols = this.config.symbols;
 
-    //Get all data for symbols from different sources (prices, indicators, news)
-    const allDataForSymbols = await Promise.all(
-      symbols.map(async (symbol) => await this.getAllDataForSymbol(symbol)
-    ));
+    const estimationsForSymbols = [];
+    const symbolsData = [];
 
-    const estimationsForSymbols = await Promise.all(
-      symbols.map(async (symbol) => await this.getAllDataForSymbol(symbol)
-    ));
-    
-    //Ask AI for a portfolio estimation ({symbol, side, percentage, reasoning})
-    const portfolioEstimate = await openAIService.getPortfolioEstimation(allDataForSymbols);
+    //Loop all symbols
+    for (let index = 0; index < symbols.length; index++) {
+
+      const symbol = symbols[index];
+
+      //Get all data for current symbol from different sources (prices, indicators, news)
+      const symbolData = await this.getAllDataForSymbol(symbol);
+      symbolsData.push(symbolData);
+
+      //Get estimation for each symbol, with certanty ponderation
+      const estimationForSymbol = await openAIService.getEstimationForSymbol(symbolData)
+      estimationsForSymbols.push(estimationForSymbol);
+
+    }
+
+    //Get total certanty to generate percentages
+    const totalCertanty = estimationsForSymbols.reduce((total, estimate) => total + estimate.certanty, 0);
 
     //Get Current Positions
     const positions = await alpacaService.api.getPositions();
-    let portfolioTotal = this.config.defaultPortfolioTotal;
+    let portfolioTotalAmt = this.config.defaultPortfolioTotal;
 
     //If there are open positions, take the total market value as the portfolio total, otherwise default value
     if (positions.length > 0) {
-      portfolioTotal = positions.reduce((total, position) => total + position.MarketValue, 0);
+      portfolioTotalAmt = positions.reduce((total, position) => total + Number(position.market_value), 0);
     }
 
     //Rebalance Portfolio with Alpaca Orders
-    const rebalancePortfolioOrdersPromises = portfolioEstimate.map(symbolEstimate => {
+    //Loop all estimations
+    for (let index = 0; index < estimationsForSymbols.length; index++) {
+
+      const symbolEstimate = estimationsForSymbols[index];
       const symbol = symbolEstimate.symbol;
-      const currentPosition = positions.find(position => position.symbol === symbolEstimate.Symbol);
-      const currentAmt = currentPosition.MarketValue || 0;
+      const currentPosition = positions.find(position => position.symbol === symbolEstimate.symbol);
+      const currentSymbolData = symbolsData.find(symbolData => symbolData.symbol === symbolEstimate.symbol);
+      const currentSymbolLastPrice = Number(currentPosition?.current_price) || currentSymbolData?.latestBar?.ClosePrice;
+      const currentQty = Number(currentPosition?.qty) || 0;
       const estimateSide = symbolEstimate.side;
+      const estimatePercentage = symbolEstimate.certanty / totalCertanty;
 
-      //Get estimated amount. If it is SHORT position, it is a negative amount
-      const estiamateAmt = ( portfolioTotal * symbolEstimate.percentage / 100 ) * (estimateSide === "long" ? 1 : -1);
+      console.log(`Creating order for ${symbol}. Current Qty: ${currentQty}`);
 
-      //If the algorithm assigned 0 allocation for this symbol, simply close the position
-      if(estiamateAmt === 0) {
-        return alpacaService.api.closePosition(symbol);
+      //Get estimated amount. If the AI estimated a SHORT position, it is a negative amount.
+      let estiamateAmt = (portfolioTotalAmt * estimatePercentage) * (estimateSide === "long" ? 1 : -1);
+      estiamateAmt = Number(estiamateAmt.toFixed(2));
+
+      //Estimate the non-fractional qty to represent the estimated amount. SHORT fractional orders are not supported.
+      const estimateQty = Math.round(estiamateAmt / currentSymbolLastPrice);
+
+      //If the algorithm assigned 0 allocation for this symbol, close the position
+      if (estimateQty === 0) {
+        if (currentPosition) {
+          await alpacaService.api.closePosition(symbol);
+        }
+        continue;
       }
 
-      //Calculate the delta amount between the current value of the position and the estimated for today
+      //If the current posisiton is LONG and the estimated is SHORT (or viceversa), close the original position first
+      if(Math.sign(estimateQty) != Math.sign(currentQty)){
+        await alpacaService.closePositionAndWait(symbol);
+        currentQty = 0;
+      }
+
+      //Calculate the delta qty between the current qty of the position and the estimated qty
       //If delta is negative, we need to sell.
       //If delta is positive, we need to buy more.
-      const deltaAmt = estiamateAmt - currentAmt;
+      const deltaQty = estimateQty - currentQty;
 
-      //If no changes to estimation, return resolved promise with no order
-      if(deltaAmt === 0) {
-        return Promise.resolve();
+      //If the delta is 0 we close the position.
+      if (deltaQty === 0) {
+        continue
       }
 
       //Create Order
-      return alpacaService.api.createOrder({
-        side: deltaAmt > 0 ? "buy" : "sell", 
+      const side = deltaQty > 0 ? "buy" : "sell";
+      await alpacaService.api.createOrder({
+        side: side,
         symbol: symbol,
         type: "market",
-        notional: Math.abs(deltaAmt),
+        qty: Math.abs(deltaQty),
         time_in_force: "gtc"
       });
 
-    })
+      console.log(`Order Created for ${symbol} (${side}). Qty: ${deltaQty}. Estimated Qty: ${estimateQty}. Position Side: ${estimateSide}`);
 
-    return await Promise.all(rebalancePortfolioOrdersPromises);
+    }
 
   }
 
@@ -164,7 +199,7 @@ class GPTAlgotrading {
 const gptAlgotrading = new GPTAlgotrading({
   mode: process.env.MODE,
   defaultPortfolioTotal: 10000, //TODO: Get this from somewhere
-  monthsAgoBars: 1,
+  monthsAgoBars: 6,
   latestNewsCount: 20,
   symbols: [
     "TSLA",
