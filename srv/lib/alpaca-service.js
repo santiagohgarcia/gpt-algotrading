@@ -27,7 +27,7 @@ class AlpacaService {
 
     return new Promise(async (res) => {
         //Wait until all orders are closed (have 0 open orders)
-        await this.closePosition(symbol);
+        await this.api.closePosition(symbol);
 
         const positionsCancelIntervalId = setInterval(async () => {
             const positions = await this.api.getPositions();

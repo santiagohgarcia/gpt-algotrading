@@ -64,13 +64,13 @@ class GPTAlgotrading {
 
     //Get historic dayly prices of last year
 
-    //Calculate {this.config.monthsAgoBars} months ago date
-    const monthsAgoDate = new Date();
-    monthsAgoDate.setMonth(monthsAgoDate.getMonth() - this.config.monthsAgoBars);
+    //Calculate begining of time date
+    const unixEpoch = new Date(0);
 
-    //Get {this.config.monthsAgoBars} months ago daily bars
+    //Get latest daily bars (Last {barsTopLimit} bars from today)
     const latestDailyBarsAsync = alpacaService.api.getBarsV2(symbol, {
-      start: monthsAgoDate.toISOString(),
+      start: unixEpoch.toISOString(),
+      limit: this.config.barsTopLimit,
       timeframe: alpacaService.api.newTimeframe(1, alpacaService.api.timeframeUnit.DAY),
       sort: "desc"
     });
@@ -84,7 +84,7 @@ class GPTAlgotrading {
     //Get Latest News
     const latestNews = await alpacaService.api.getNews({
       symbols: [symbol],
-      totalLimit: this.config.latestNewsCount,
+      totalLimit: this.config.newsTopLimit,
       includeContent: false
     });
 
@@ -163,7 +163,8 @@ class GPTAlgotrading {
       }
 
       //If the current posisiton is LONG and the estimated is SHORT (or viceversa), close the original position first
-      if(Math.sign(estimateQty) != Math.sign(currentQty)){
+      if(Math.sign(estimateQty) != Math.sign(currentQty) && currentQty !== 0){
+        console.log(`${symbol} SWITCHING SIDES!`)
         await alpacaService.closePositionAndWait(symbol);
         currentQty = 0;
       }
@@ -185,7 +186,8 @@ class GPTAlgotrading {
         symbol: symbol,
         type: "market",
         qty: Math.abs(deltaQty),
-        time_in_force: "gtc"
+        //extended_hours: true, //Makes the order executable before 9AM and after 4:30PM. Only works with type=limit 
+        time_in_force: "day"
       });
 
       console.log(`Order Created for ${symbol} (${side}). Qty: ${deltaQty}. Estimated Qty: ${estimateQty}. Position Side: ${estimateSide}`);
@@ -198,9 +200,9 @@ class GPTAlgotrading {
 
 const gptAlgotrading = new GPTAlgotrading({
   mode: process.env.MODE,
-  defaultPortfolioTotal: 10000, //TODO: Get this from somewhere
-  monthsAgoBars: 6,
-  latestNewsCount: 20,
+  defaultPortfolioTotal: process.env.DEFAULT_PORTFOLIO_TOTAL,
+  barsTopLimit: process.env.BARS_TOP_LIMIT,
+  newsTopLimit: process.env.NEWS_TOP_LIMIT,
   symbols: [
     "TSLA",
     "GOOG",

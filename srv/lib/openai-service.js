@@ -23,8 +23,8 @@ class OpenAIService {
 
         const systemContextText =
         `You are a stock market analyst. Current timestamp is ${new Date().toISOString()}
-        You will be provided with a stock current price, last six months daily bars, including close prices, technical indicators like RSI and SMA and latest 20 news articles about that stock.
-        Your task is to use this information to predict if the price will go up (long position) or down (short position) by the end of the day.
+        You will be provided with a stock current price, last daily bars, including close prices, technical indicators like RSI and SMA and latest news articles about that stock.
+        Your task is to use this information to predict if the price will go up (long position) or down (short position) by the end of the current day.
         Indicate how certain you are about the prediction with a number from 0 to 100. If you are not sure you can set 0.`;
 
         //Gets Symbol Data in Text format to send to AI
