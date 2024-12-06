@@ -30,9 +30,9 @@ class GPTAlgotrading {
     const clock = await alpacaService.api.getClock();
     let startAfterMs = 0; //For dev mode, execute instantly
 
-    //For production mode, Calculate miliseconds to next open + 10 min to be sure the market will be open
+    //For production mode, Calculate miliseconds to next open + 5 min to be sure the market will be open
     if (this.config.mode === "production") {
-      startAfterMs = new Date(clock.next_open) - new Date() + 600000 /*10 min AFTER opening */;
+      startAfterMs = new Date(clock.next_open) - new Date() + 300000 /*5 min AFTER opening */;
     }
 
     //Run at opening of market
@@ -120,6 +120,12 @@ class GPTAlgotrading {
 
     }
 
+    //Create Rebalancing Orders in Alpaca
+    await this.createRebalancingOrders(symbolsData,estimationsForSymbols)
+
+  }
+
+  async createRebalancingOrders(symbolsData, estimationsForSymbols) {
     //Get total certanty to generate percentages
     const totalCertanty = estimationsForSymbols.reduce((total, estimate) => total + estimate.certanty, 0);
 
@@ -163,7 +169,7 @@ class GPTAlgotrading {
       }
 
       //If the current posisiton is LONG and the estimated is SHORT (or viceversa), close the original position first
-      if(Math.sign(estimateQty) != Math.sign(currentQty) && currentQty !== 0){
+      if (Math.sign(estimateQty) != Math.sign(currentQty) && currentQty !== 0) {
         console.log(`${symbol} SWITCHING SIDES!`)
         await alpacaService.closePositionAndWait(symbol);
         currentQty = 0;
