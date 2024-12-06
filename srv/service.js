@@ -135,7 +135,7 @@ class GPTAlgotrading {
 
     //If there are open positions, take the total market value as the portfolio total, otherwise default value
     if (positions.length > 0) {
-      portfolioTotalAmt = positions.reduce((total, position) => total + Number(position.market_value), 0);
+      portfolioTotalAmt = positions.reduce((total, position) => total + Math.abs(Number(position.market_value)), 0);
     }
 
     //Rebalance Portfolio with Alpaca Orders
@@ -147,9 +147,9 @@ class GPTAlgotrading {
       const currentPosition = positions.find(position => position.symbol === symbolEstimate.symbol);
       const currentSymbolData = symbolsData.find(symbolData => symbolData.symbol === symbolEstimate.symbol);
       const currentSymbolLastPrice = Number(currentPosition?.current_price) || currentSymbolData?.latestBar?.ClosePrice;
-      const currentQty = Number(currentPosition?.qty) || 0;
       const estimateSide = symbolEstimate.side;
       const estimatePercentage = symbolEstimate.certanty / totalCertanty;
+      let currentQty = Number(currentPosition?.qty) || 0;
 
       console.log(`Creating order for ${symbol}. Current Qty: ${currentQty}`);
 
@@ -206,9 +206,9 @@ class GPTAlgotrading {
 
 const gptAlgotrading = new GPTAlgotrading({
   mode: process.env.MODE,
-  defaultPortfolioTotal: process.env.DEFAULT_PORTFOLIO_TOTAL,
-  barsTopLimit: process.env.BARS_TOP_LIMIT,
-  newsTopLimit: process.env.NEWS_TOP_LIMIT,
+  defaultPortfolioTotal: Number(process.env.DEFAULT_PORTFOLIO_TOTAL),
+  barsTopLimit: Number(process.env.BARS_TOP_LIMIT),
+  newsTopLimit: Number(process.env.NEWS_TOP_LIMIT),
   symbols: [
     "TSLA",
     "GOOG",
