@@ -165,7 +165,7 @@ class GPTAlgotrading {
       const symbol = symbolEstimate.symbol;
       const currentPosition = positions.find(position => position.symbol === symbolEstimate.symbol);
       const currentSymbolData = symbolsData.find(symbolData => symbolData.symbol === symbolEstimate.symbol);
-      const currentSymbolLastPrice = Number(currentPosition?.current_price) || currentSymbolData?.latestBar?.ClosePrice;
+      const currentSymbolLastPrice = Number(currentPosition?.current_price) || currentSymbolData?.close;
       const estimateSide = symbolEstimate.side;
       const estimatePercentage = symbolEstimate.certanty / totalCertanty;
       let currentQty = Number(currentPosition?.qty) || 0;
