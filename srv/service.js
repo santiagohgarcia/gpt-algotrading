@@ -60,7 +60,7 @@ class GPTAlgotrading {
   async getAllDataForSymbol(symbol) {
 
     //Get Latest Price Bar
-    const latestBar = await alpacaService.api.getLatestBar(symbol);
+    // const latestBar = await alpacaService.api.getLatestBar(symbol);
 
     //Get historic dayly prices of last year
 
@@ -68,31 +68,48 @@ class GPTAlgotrading {
     const unixEpoch = new Date(0);
 
     //Get latest daily bars (Last {barsTopLimit} bars from today)
-    const latestDailyBarsAsync = alpacaService.api.getBarsV2(symbol, {
+    const latestBarsAsync = alpacaService.api.getBarsV2(symbol, {
       start: unixEpoch.toISOString(),
       limit: this.config.barsTopLimit,
       timeframe: alpacaService.api.newTimeframe(1, alpacaService.api.timeframeUnit.DAY),
       sort: "desc"
     });
 
-    //Convert latest daily bars to array
-    const latestDailyBars = await this._asyncGeneratorToArray(latestDailyBarsAsync);
+    //Convert latest daily bars to array with only necesary fields
+    const latestBars = [];
+
+    for await (const bar of latestBarsAsync) {
+      latestBars.push({
+        date: new Date(bar.Timestamp).toISOString().substring(0, 10),
+        close: bar.ClosePrice,
+        high: bar.HighPrice,
+        low: bar.LowPrice,
+        volume: bar.Volume,
+        VWAP: bar.VWAP
+      });
+    }
 
     //Add indicators to bars
-    const latestDailyBarsWithIndicators = await indicatorsService.addIndicatorsToBars(latestDailyBars);
+    const latestBarsWithIndicators = await indicatorsService.addIndicatorsToBars(latestBars);
 
     //Get Latest News
-    const latestNews = await alpacaService.api.getNews({
+    const latestNews = (await alpacaService.api.getNews({
       symbols: [symbol],
       totalLimit: this.config.newsTopLimit,
       includeContent: false
+    })).map(newsArticle => {
+      return {
+        updatedAt: new Date(newsArticle.UpdatedAt).toISOString(),
+        headline: newsArticle.Headline,
+        summary: newsArticle.Summary
+      }
     });
 
     //Returns an object with the symbol and the latest news, bars, indicators
     return {
       symbol: symbol,
-      latestBar: latestBar,
-      latestDailyBarsWithIndicators: latestDailyBarsWithIndicators,
+      currentDateTime: new Date().toISOString(),
+      latestBars: latestBarsWithIndicators,
       news: latestNews
     };
   }
@@ -118,8 +135,10 @@ class GPTAlgotrading {
       const estimationForSymbol = await openAIService.getEstimationForSymbol(symbolData)
       estimationsForSymbols.push(estimationForSymbol);
 
-    }
+      await sleep(30*1000) //Wait 30s for the 30K token limit per minute on gpt-4o. This can be removed when we move to Tier2
 
+    }
+    
     //Create Rebalancing Orders in Alpaca
     await this.createRebalancingOrders(symbolsData,estimationsForSymbols)
 
@@ -210,8 +229,10 @@ const gptAlgotrading = new GPTAlgotrading({
   barsTopLimit: Number(process.env.BARS_TOP_LIMIT),
   newsTopLimit: Number(process.env.NEWS_TOP_LIMIT),
   symbols: [
+    "AAPL",
     "TSLA",
     "GOOG",
+    "GOOGL",
     "BRK.B",
     "META",
     "UNH",
@@ -220,7 +241,6 @@ const gptAlgotrading = new GPTAlgotrading({
     "JPM",
     "MSFT",
     "JNJ",
-    "AAPL",
     "V",
     "PG",
     "MA",
@@ -233,8 +253,7 @@ const gptAlgotrading = new GPTAlgotrading({
     "PEP",
     "ADBE",
     "AMZN",
-    "NVDA",
-    "GOOGL"
+    "NVDA"
   ] //TODO: Get list of stocks from somewhere else
 })
 
