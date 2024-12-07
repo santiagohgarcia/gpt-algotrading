@@ -23,23 +23,25 @@ class AlpacaService {
     return this._alpaca;
   }
 
-  async closePositionAndWait(symbol){
+  async closePositionAndWait(symbol) {
 
-    return new Promise(async (res) => {
-        //Wait until all orders are closed (have 0 open orders)
-        await this.api.closePosition(symbol);
+    return new Promise((res) => {
+      //Wait until all orders are closed (have 0 open orders)
+      this.api.closePosition(symbol).then(() => {
 
         const positionsCancelIntervalId = setInterval(async () => {
-            const positions = await this.api.getPositions();
-            const symbolPositions = positions.filter(position => position.symbol === symbol);
-            if(symbolPositions.length === 0) {
-                res();
-                clearInterval(positionsCancelIntervalId);
-            }
-        },5000)
-        
+          const positions = await this.api.getPositions();
+          const symbolPositions = positions.filter(position => position.symbol === symbol);
+          if (symbolPositions.length === 0) {
+            res();
+            clearInterval(positionsCancelIntervalId);
+          }
+        }, 5000)
+
+      });
+
     });
-}
+  }
 
 }
 
