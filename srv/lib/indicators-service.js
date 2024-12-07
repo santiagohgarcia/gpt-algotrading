@@ -1,4 +1,4 @@
-import { RSI, SMA, MACD, BollingerBands, ADX, ATR, Stochastic, OBV, PSAR, setConfig } from 'technicalindicators';
+import { RSI, SMA, MACD, BollingerBands, ADX, ATR, Stochastic, PSAR, /*OBV,  setConfig*/ } from 'technicalindicators';
 
 class IndicatorsService {
 
@@ -12,17 +12,6 @@ class IndicatorsService {
 
     //List of possible indicators according to:
     //https://chatgpt.com/share/67533bd8-b768-8011-9087-4a695951e65f
-
-    // SMA/EMA (10, 50)
-    // RSI (14)
-    // MACD (12, 26, 9)
-    // Bollinger Bands (20, 2)
-    // ADX (14)
-    // ATR (14)
-    // Stochastic Oscillator (14, 3)
-    // Donchian Channels (20)
-    // Parabolic SAR (0.02, 0.2)
-    // VWAP - already part of the Bar
 
     async addIndicatorsToBars(bars) {
 
@@ -108,28 +97,28 @@ class IndicatorsService {
 
         return bars.reverse().map(bar => {
             bar.indicators = {
-                "SMA(p=10)": smaShort.nextValue(bar.close),
-                "SMA(p=50)": smaLong.nextValue(bar.close),
-                "RSI(p=14)": rsi.nextValue(bar.close),
-                "MACD(fp=12,sp=26,sp=9)": macd.nextValue(bar.close),
-                "BolingerBands(p=20,sd=2)": bb.nextValue(bar.close),
-                "ADX(p=14)": adx.nextValue({
+                "SMA(period=10)": smaShort.nextValue(bar.close),
+                "SMA(period=50)": smaLong.nextValue(bar.close),
+                "RSI(period=14)": rsi.nextValue(bar.close),
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": macd.nextValue(bar.close),
+                "BolingerBands(period=20,stdDev=2)": bb.nextValue(bar.close),
+                "ADX(period=14)": adx.nextValue({
                     close: bar.close,
                     high: bar.high,
                     low: bar.low
                 }),
-                "ATR(p=14)": atr.nextValue({
+                "ATR(period=14)": atr.nextValue({
                     close: bar.close,
                     high: bar.high,
                     low: bar.low
                 }),
-                "Stochastic(p=14,sp=3)": so.nextValue({
+                "Stochastic(period=14,signalPeriod=3)": so.nextValue({
                     close: bar.close,
                     high: bar.high,
                     low: bar.low
                 }),
-                "VolumeSMA(p=20)": volumeSMA.nextValue(bar.volume),
-                "PSAR(s=0.02,m=0.2)": psar.nextValue({
+                "VolumeSMA(period=20)": volumeSMA.nextValue(bar.volume),
+                "PSAR(step=0.02,max=0.2)": psar.nextValue({
                     high: bar.high,
                     low: bar.low
                 })
