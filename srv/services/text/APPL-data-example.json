@@ -1,0 +1,1719 @@
+{
+    "symbol": "AAPL",
+    "currentDateTime": "2024-12-07T13:53:52.607Z",
+    "latestBars": [
+        {
+            "date": "2024-12-06",
+            "close": 242.84,
+            "high": 244.63,
+            "low": 242.08,
+            "volume": 36870619,
+            "VWAP": 243.211621,
+            "indicators": {
+                "SMA(period=10)": 238.12,
+                "SMA(period=50)": 230.39,
+                "RSI(period=14)": 72.53,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 4.04,
+                    "signal": 2.62,
+                    "histogram": 1.42
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 232.44,
+                    "upper": 245.76,
+                    "lower": 219.12,
+                    "pb": 0.89
+                },
+                "ADX(period=14)": {
+                    "adx": 24.06,
+                    "pdi": 32.99,
+                    "mdi": 11.35
+                },
+                "ATR(period=14)": 3.49,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 90.8,
+                    "d": 92.62
+                },
+                "VolumeSMA(period=20)": 43243530.25,
+                "PSAR(step=0.02,max=0.2)": 236.25
+            }
+        },
+        {
+            "date": "2024-12-05",
+            "close": 243.04,
+            "high": 244.54,
+            "low": 242.13,
+            "volume": 40033878,
+            "VWAP": 243.055,
+            "indicators": {
+                "SMA(period=10)": 236.69,
+                "SMA(period=50)": 230.08,
+                "RSI(period=14)": 73.18,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 3.83,
+                    "signal": 2.26,
+                    "histogram": 1.57
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 231.67,
+                    "upper": 244.25,
+                    "lower": 219.09,
+                    "pb": 0.95
+                },
+                "ADX(period=14)": {
+                    "adx": 22.16,
+                    "pdi": 34.61,
+                    "mdi": 11.97
+                },
+                "ATR(period=14)": 3.56,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 92.6,
+                    "d": 95.5
+                },
+                "VolumeSMA(period=20)": 43506883.85,
+                "PSAR(step=0.02,max=0.2)": 234.17
+            }
+        },
+        {
+            "date": "2024-12-04",
+            "close": 243.01,
+            "high": 244.11,
+            "low": 241.25,
+            "volume": 44383935,
+            "VWAP": 242.952411,
+            "indicators": {
+                "SMA(period=10)": 235.28,
+                "SMA(period=50)": 229.75,
+                "RSI(period=14)": 73.15,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 3.5,
+                    "signal": 1.87,
+                    "histogram": 1.63
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 230.65,
+                    "upper": 242.67,
+                    "lower": 218.64,
+                    "pb": 1.01
+                },
+                "ADX(period=14)": {
+                    "adx": 20.12,
+                    "pdi": 35.46,
+                    "mdi": 12.58
+                },
+                "ATR(period=14)": 3.65,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 94.46,
+                    "d": 95.75
+                },
+                "VolumeSMA(period=20)": 44233246,
+                "PSAR(step=0.02,max=0.2)": 231.69
+            }
+        },
+        {
+            "date": "2024-12-03",
+            "close": 242.65,
+            "high": 242.76,
+            "low": 238.9,
+            "volume": 38861017,
+            "VWAP": 241.628776,
+            "indicators": {
+                "SMA(period=10)": 233.81,
+                "SMA(period=50)": 229.44,
+                "RSI(period=14)": 72.77,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 3.02,
+                    "signal": 1.46,
+                    "histogram": 1.56
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 229.68,
+                    "upper": 240.65,
+                    "lower": 218.7,
+                    "pb": 1.09
+                },
+                "ADX(period=14)": {
+                    "adx": 18.01,
+                    "pdi": 34.77,
+                    "mdi": 13.33
+                },
+                "ATR(period=14)": 3.71,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 99.45,
+                    "d": 96.62
+                },
+                "VolumeSMA(period=20)": 43419616.15,
+                "PSAR(step=0.02,max=0.2)": 229.26
+            }
+        },
+        {
+            "date": "2024-12-02",
+            "close": 239.59,
+            "high": 240.79,
+            "low": 237.16,
+            "volume": 48137103,
+            "VWAP": 239.520954,
+            "indicators": {
+                "SMA(period=10)": 232.35,
+                "SMA(period=50)": 229.11,
+                "RSI(period=14)": 69.35,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 2.4,
+                    "signal": 1.07,
+                    "histogram": 1.33
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 228.64,
+                    "upper": 238.35,
+                    "lower": 218.94,
+                    "pb": 1.06
+                },
+                "ADX(period=14)": {
+                    "adx": 15.96,
+                    "pdi": 33.46,
+                    "mdi": 14.4
+                },
+                "ATR(period=14)": 3.7,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 93.34,
+                    "d": 95.02
+                },
+                "VolumeSMA(period=20)": 43723788.7,
+                "PSAR(step=0.02,max=0.2)": 227.06
+            }
+        },
+        {
+            "date": "2024-11-29",
+            "close": 237.33,
+            "high": 237.81,
+            "low": 233.97,
+            "volume": 28481377,
+            "VWAP": 236.570409,
+            "indicators": {
+                "SMA(period=10)": 230.89,
+                "SMA(period=50)": 228.88,
+                "RSI(period=14)": 66.46,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 1.89,
+                    "signal": 0.74,
+                    "histogram": 1.15
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 227.81,
+                    "upper": 236.42,
+                    "lower": 219.21,
+                    "pb": 1.05
+                },
+                "ADX(period=14)": {
+                    "adx": 14.13,
+                    "pdi": 29.8,
+                    "mdi": 15.48
+                },
+                "ATR(period=14)": 3.71,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 97.06,
+                    "d": 96.03
+                },
+                "VolumeSMA(period=20)": 44580770.6,
+                "PSAR(step=0.02,max=0.2)": 225.31
+            }
+        },
+        {
+            "date": "2024-11-27",
+            "close": 234.93,
+            "high": 235.69,
+            "low": 233.8101,
+            "volume": 33498439,
+            "VWAP": 234.806483,
+            "indicators": {
+                "SMA(period=10)": 229.98,
+                "SMA(period=50)": 228.72,
+                "RSI(period=14)": 63.02,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 1.44,
+                    "signal": 0.45,
+                    "histogram": 0.98
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 227.24,
+                    "upper": 234.68,
+                    "lower": 219.8,
+                    "pb": 1.02
+                },
+                "ADX(period=14)": {
+                    "adx": 12.78,
+                    "pdi": 27.76,
+                    "mdi": 16.72
+                },
+                "ATR(period=14)": 3.69,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 94.64,
+                    "d": 95.97
+                },
+                "VolumeSMA(period=20)": 46375206.05,
+                "PSAR(step=0.02,max=0.2)": 223.89
+            }
+        },
+        {
+            "date": "2024-11-26",
+            "close": 235.06,
+            "high": 235.57,
+            "low": 233.33,
+            "volume": 45986189,
+            "VWAP": 234.821331,
+            "indicators": {
+                "SMA(period=10)": 229,
+                "SMA(period=50)": 228.43,
+                "RSI(period=14)": 63.35,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 1.09,
+                    "signal": 0.21,
+                    "histogram": 0.88
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 227,
+                    "upper": 233.7,
+                    "lower": 220.3,
+                    "pb": 1.1
+                },
+                "ADX(period=14)": {
+                    "adx": 11.85,
+                    "pdi": 28.57,
+                    "mdi": 17.35
+                },
+                "ATR(period=14)": 3.83,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 96.38,
+                    "d": 94.8
+                },
+                "VolumeSMA(period=20)": 47053829.45,
+                "PSAR(step=0.02,max=0.2)": 222.6
+            }
+        },
+        {
+            "date": "2024-11-25",
+            "close": 232.87,
+            "high": 233.245,
+            "low": 229.74,
+            "volume": 90152832,
+            "VWAP": 232.405006,
+            "indicators": {
+                "SMA(period=10)": 227.91,
+                "SMA(period=50)": 228.07,
+                "RSI(period=14)": 60.11,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 0.61,
+                    "signal": -0.01,
+                    "histogram": 0.62
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 226.93,
+                    "upper": 233.32,
+                    "lower": 220.54,
+                    "pb": 0.97
+                },
+                "ADX(period=14)": {
+                    "adx": 10.88,
+                    "pdi": 25.52,
+                    "mdi": 18.27
+                },
+                "ATR(period=14)": 3.92,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 96.89,
+                    "d": 90.77
+                },
+                "VolumeSMA(period=20)": 46525382.35,
+                "PSAR(step=0.02,max=0.2)": 221.67
+            }
+        },
+        {
+            "date": "2024-11-22",
+            "close": 229.87,
+            "high": 230.7199,
+            "low": 228.06,
+            "volume": 38168252,
+            "VWAP": 229.692547,
+            "indicators": {
+                "SMA(period=10)": 227.05,
+                "SMA(period=50)": 227.73,
+                "RSI(period=14)": 55.07,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 0.21,
+                    "signal": -0.17,
+                    "histogram": 0.37
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 226.96,
+                    "upper": 233.44,
+                    "lower": 220.47,
+                    "pb": 0.72
+                },
+                "ADX(period=14)": {
+                    "adx": 10.45,
+                    "pdi": 22.35,
+                    "mdi": 19.51
+                },
+                "ATR(period=14)": 3.95,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 91.13,
+                    "d": 88.11
+                },
+                "VolumeSMA(period=20)": 43822097.45,
+                "PSAR(step=0.02,max=0.2)": 221.09
+            }
+        },
+        {
+            "date": "2024-11-21",
+            "close": 228.52,
+            "high": 230.155,
+            "low": 225.7103,
+            "volume": 42108327,
+            "VWAP": 228.439064,
+            "indicators": {
+                "SMA(period=10)": 226.76,
+                "SMA(period=50)": 227.59,
+                "RSI(period=14)": 52.57,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 0.01,
+                    "signal": -0.26,
+                    "histogram": 0.26
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 227.03,
+                    "upper": 233.69,
+                    "lower": 220.37,
+                    "pb": 0.61
+                },
+                "ADX(period=14)": {
+                    "adx": 10.73,
+                    "pdi": 22.41,
+                    "mdi": 20.5
+                },
+                "ATR(period=14)": 4.05,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 84.31,
+                    "d": 85.07
+                },
+                "VolumeSMA(period=20)": 43853800.05,
+                "PSAR(step=0.02,max=0.2)": 220.71
+            }
+        },
+        {
+            "date": "2024-11-20",
+            "close": 229,
+            "high": 229.93,
+            "low": 225.89,
+            "volume": 35230059,
+            "VWAP": 228.019292,
+            "indicators": {
+                "SMA(period=10)": 226.65,
+                "RSI(period=14)": 53.55,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": -0.12,
+                    "signal": -0.32,
+                    "histogram": 0.21
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 227.13,
+                    "upper": 233.94,
+                    "lower": 220.32,
+                    "pb": 0.64
+                },
+                "ADX(period=14)": {
+                    "adx": 11.21,
+                    "pdi": 23.88,
+                    "mdi": 22.24
+                },
+                "ATR(period=14)": 4.02,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 88.9,
+                    "d": 77.1
+                },
+                "VolumeSMA(period=20)": 43303858.85,
+                "PSAR(step=0.02,max=0.2)": 220.32
+            }
+        },
+        {
+            "date": "2024-11-19",
+            "close": 228.28,
+            "high": 230.16,
+            "low": 226.66,
+            "volume": 36211774,
+            "VWAP": 228.651147,
+            "indicators": {
+                "SMA(period=10)": 226.03,
+                "RSI(period=14)": 52.31,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": -0.32,
+                    "signal": -0.38,
+                    "histogram": 0.06
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 227.22,
+                    "upper": 234.17,
+                    "lower": 220.27,
+                    "pb": 0.58
+                },
+                "ADX(period=14)": {
+                    "adx": 11.8,
+                    "pdi": 25.73,
+                    "mdi": 22.49
+                },
+                "ATR(period=14)": 4.02,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 82.01,
+                    "d": 59.53
+                },
+                "VolumeSMA(period=20)": 44156704.85,
+                "PSAR(step=0.02,max=0.2)": 219.91
+            }
+        },
+        {
+            "date": "2024-11-18",
+            "close": 228.02,
+            "high": 229.74,
+            "low": 225.17,
+            "volume": 44691859,
+            "VWAP": 228.036169,
+            "indicators": {
+                "SMA(period=10)": 225.54,
+                "RSI(period=14)": 51.87,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": -0.5,
+                    "signal": -0.39,
+                    "histogram": -0.11
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 227.6,
+                    "upper": 235.5,
+                    "lower": 219.7,
+                    "pb": 0.53
+                },
+                "ADX(period=14)": {
+                    "adx": 12.19,
+                    "pdi": 26.64,
+                    "mdi": 23.98
+                },
+                "ATR(period=14)": 4.06,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 60.39,
+                    "d": 51.08
+                },
+                "VolumeSMA(period=20)": 44288445.05,
+                "PSAR(step=0.02,max=0.2)": 219.71
+            }
+        },
+        {
+            "date": "2024-11-15",
+            "close": 225,
+            "high": 226.92,
+            "low": 224.27,
+            "volume": 47841561,
+            "VWAP": 225.147593,
+            "indicators": {
+                "SMA(period=10)": 224.94,
+                "RSI(period=14)": 46.65,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": -0.7,
+                    "signal": -0.36,
+                    "histogram": -0.34
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 228.02,
+                    "upper": 236.82,
+                    "lower": 219.23,
+                    "pb": 0.33
+                },
+                "ADX(period=14)": {
+                    "adx": 12.73,
+                    "pdi": 23.65,
+                    "mdi": 26.16
+                },
+                "ATR(period=14)": 4.01,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 36.2,
+                    "d": 42.96
+                },
+                "VolumeSMA(period=20)": 43866575.6,
+                "PSAR(step=0.02,max=0.2)": 229.37
+            }
+        },
+        {
+            "date": "2024-11-14",
+            "close": 228.22,
+            "high": 228.87,
+            "low": 225,
+            "volume": 44923941,
+            "VWAP": 227.454246,
+            "indicators": {
+                "SMA(period=10)": 224.73,
+                "RSI(period=14)": 52.27,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": -0.64,
+                    "signal": -0.28,
+                    "histogram": -0.36
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 228.52,
+                    "upper": 237.71,
+                    "lower": 219.34,
+                    "pb": 0.48
+                },
+                "ADX(period=14)": {
+                    "adx": 13.32,
+                    "pdi": 25.44,
+                    "mdi": 26.74
+                },
+                "ATR(period=14)": 4.01,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 56.66,
+                    "d": 40.92
+                },
+                "VolumeSMA(period=20)": 43796071.15,
+                "PSAR(step=0.02,max=0.2)": 229.99
+            }
+        },
+        {
+            "date": "2024-11-13",
+            "close": 225.12,
+            "high": 226.65,
+            "low": 222.76,
+            "volume": 48566217,
+            "VWAP": 224.935939,
+            "indicators": {
+                "SMA(period=10)": 224.5,
+                "RSI(period=14)": 46.51,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": -0.88,
+                    "signal": -0.19,
+                    "histogram": -0.69
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 228.72,
+                    "upper": 238.04,
+                    "lower": 219.41,
+                    "pb": 0.31
+                },
+                "ADX(period=14)": {
+                    "adx": 14.15,
+                    "pdi": 23.08,
+                    "mdi": 28.72
+                },
+                "ATR(period=14)": 4.03,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 36.02,
+                    "d": 31.8
+                },
+                "VolumeSMA(period=20)": 43199564.6,
+                "PSAR(step=0.02,max=0.2)": 230.64
+            }
+        },
+        {
+            "date": "2024-11-12",
+            "close": 224.23,
+            "high": 225.59,
+            "low": 223.355,
+            "volume": 40398299,
+            "VWAP": 224.377658,
+            "indicators": {
+                "SMA(period=10)": 225,
+                "RSI(period=14)": 44.74,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": -0.85,
+                    "signal": -0.01,
+                    "histogram": -0.84
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 229.05,
+                    "upper": 238.31,
+                    "lower": 219.8,
+                    "pb": 0.24
+                },
+                "ADX(period=14)": {
+                    "adx": 14.4,
+                    "pdi": 22.77,
+                    "mdi": 30.84
+                },
+                "ATR(period=14)": 4.04,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 30.09,
+                    "d": 34.43
+                },
+                "VolumeSMA(period=20)": 42475365.75,
+                "PSAR(step=0.02,max=0.2)": 231.34
+            }
+        },
+        {
+            "date": "2024-11-11",
+            "close": 224.23,
+            "high": 225.7,
+            "low": 221.5,
+            "volume": 42005602,
+            "VWAP": 223.397808,
+            "indicators": {
+                "SMA(period=10)": 225.94,
+                "RSI(period=14)": 44.74,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": -0.72,
+                    "signal": 0.2,
+                    "histogram": -0.92
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 229.53,
+                    "upper": 238.73,
+                    "lower": 220.34,
+                    "pb": 0.21
+                },
+                "ADX(period=14)": {
+                    "adx": 14.35,
+                    "pdi": 23.71,
+                    "mdi": 32.11
+                },
+                "ATR(period=14)": 4.17,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 29.29,
+                    "d": 39.51
+                },
+                "VolumeSMA(period=20)": 43693019.15,
+                "PSAR(step=0.02,max=0.2)": 232.08
+            }
+        },
+        {
+            "date": "2024-11-08",
+            "close": 226.96,
+            "high": 228.66,
+            "low": 226.405,
+            "volume": 38319325,
+            "VWAP": 227.235239,
+            "indicators": {
+                "SMA(period=10)": 226.86,
+                "RSI(period=14)": 49.04,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": -0.54,
+                    "signal": 0.43,
+                    "histogram": -0.96
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 229.89,
+                    "upper": 238.78,
+                    "lower": 220.99,
+                    "pb": 0.34
+                },
+                "ADX(period=14)": {
+                    "adx": 14.3,
+                    "pdi": 26.15,
+                    "mdi": 26.17
+                },
+                "ATR(period=14)": 4.08,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 43.91,
+                    "d": 35.6
+                },
+                "VolumeSMA(period=20)": 43586843.3,
+                "PSAR(step=0.02,max=0.2)": 232.87
+            }
+        },
+        {
+            "date": "2024-11-07",
+            "close": 227.48,
+            "high": 227.875,
+            "low": 224.57,
+            "volume": 42137691,
+            "VWAP": 226.79628,
+            "indicators": {
+                "SMA(period=10)": 227.31,
+                "RSI(period=14)": 49.89,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": -0.57,
+                    "signal": 0.67,
+                    "histogram": -1.24
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 229.92,
+                    "upper": 238.78,
+                    "lower": 221.06,
+                    "pb": 0.36
+                },
+                "ADX(period=14)": {
+                    "adx": 15.39,
+                    "pdi": 25.79,
+                    "mdi": 27.24
+                },
+                "ATR(period=14)": 4.22,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 45.33,
+                    "d": 28.24
+                },
+                "VolumeSMA(period=20)": 43258836.45,
+                "PSAR(step=0.02,max=0.2)": 233.71
+            }
+        },
+        {
+            "date": "2024-11-06",
+            "close": 222.72,
+            "high": 226.065,
+            "low": 221.19,
+            "volume": 54561121,
+            "VWAP": 223.789045,
+            "indicators": {
+                "SMA(period=10)": 227.61,
+                "RSI(period=14)": 41.24,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": -0.67,
+                    "signal": 0.98,
+                    "histogram": -1.65
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 230,
+                    "upper": 238.8,
+                    "lower": 221.2,
+                    "pb": 0.09
+                },
+                "ADX(period=14)": {
+                    "adx": 16.37,
+                    "pdi": 24.9,
+                    "mdi": 29.85
+                },
+                "ATR(period=14)": 4.14,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 17.56,
+                    "d": 17.6
+                },
+                "VolumeSMA(period=20)": 42561129.1,
+                "PSAR(step=0.02,max=0.2)": 234.61
+            }
+        },
+        {
+            "date": "2024-11-05",
+            "close": 223.45,
+            "high": 223.95,
+            "low": 221.14,
+            "volume": 28111338,
+            "VWAP": 223.110799,
+            "indicators": {
+                "SMA(period=10)": 228.42,
+                "RSI(period=14)": 42.28,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": -0.29,
+                    "signal": 1.39,
+                    "histogram": -1.68
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 230.34,
+                    "upper": 238.49,
+                    "lower": 222.19,
+                    "pb": 0.08
+                },
+                "ADX(period=14)": {
+                    "adx": 16.93,
+                    "pdi": 23.21,
+                    "mdi": 32.59
+                },
+                "ATR(period=14)": 4.09,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 21.82,
+                    "d": 16.86
+                },
+                "VolumeSMA(period=20)": 41512627.6,
+                "PSAR(step=0.02,max=0.2)": 235.56
+            }
+        },
+        {
+            "date": "2024-11-04",
+            "close": 222.01,
+            "high": 222.79,
+            "low": 219.71,
+            "volume": 44944468,
+            "VWAP": 221.767417,
+            "indicators": {
+                "SMA(period=10)": 229.66,
+                "RSI(period=14)": 39.48,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 0.12,
+                    "signal": 1.81,
+                    "histogram": -1.69
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 230.45,
+                    "upper": 238.27,
+                    "lower": 222.64,
+                    "pb": -0.04
+                },
+                "ADX(period=14)": {
+                    "adx": 16.94,
+                    "pdi": 22.27,
+                    "mdi": 34.27
+                },
+                "ATR(period=14)": 4.19,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 13.42,
+                    "d": 11.07
+                },
+                "VolumeSMA(period=20)": 41699845.35,
+                "PSAR(step=0.02,max=0.2)": 236.57
+            }
+        },
+        {
+            "date": "2024-11-01",
+            "close": 222.91,
+            "high": 225.35,
+            "low": 220.27,
+            "volume": 65276741,
+            "VWAP": 222.804987,
+            "indicators": {
+                "SMA(period=10)": 231.11,
+                "RSI(period=14)": 40.62,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 0.79,
+                    "signal": 2.23,
+                    "histogram": -1.45
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 230.44,
+                    "upper": 238.32,
+                    "lower": 222.55,
+                    "pb": 0.02
+                },
+                "ADX(period=14)": {
+                    "adx": 16.61,
+                    "pdi": 23.56,
+                    "mdi": 35.24
+                },
+                "ATR(period=14)": 4.26,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 15.33,
+                    "d": 15.66
+                },
+                "VolumeSMA(period=20)": 41427889.65,
+                "PSAR(step=0.02,max=0.2)": 237.25
+            }
+        },
+        {
+            "date": "2024-10-31",
+            "close": 225.91,
+            "high": 229.83,
+            "low": 225.37,
+            "volume": 64370086,
+            "VWAP": 227.038381,
+            "indicators": {
+                "SMA(period=10)": 232.32,
+                "RSI(period=14)": 44.62,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 1.54,
+                    "signal": 2.6,
+                    "histogram": -1.06
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 230.63,
+                    "upper": 237.93,
+                    "lower": 223.33,
+                    "pb": 0.18
+                },
+                "ADX(period=14)": {
+                    "adx": 16.36,
+                    "pdi": 26.02,
+                    "mdi": 29.48
+                },
+                "ATR(period=14)": 4.16,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 4.46,
+                    "d": 31.54
+                },
+                "VolumeSMA(period=20)": 40031307.5,
+                "PSAR(step=0.02,max=0.2)": 237.49
+            }
+        },
+        {
+            "date": "2024-10-30",
+            "close": 230.1,
+            "high": 233.47,
+            "low": 229.55,
+            "volume": 47070907,
+            "VWAP": 230.82421,
+            "indicators": {
+                "SMA(period=10)": 232.94,
+                "RSI(period=14)": 51.14,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 2.17,
+                    "signal": 2.86,
+                    "histogram": -0.69
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 230.62,
+                    "upper": 237.95,
+                    "lower": 223.29,
+                    "pb": 0.46
+                },
+                "ADX(period=14)": {
+                    "adx": 17.14,
+                    "pdi": 28.32,
+                    "mdi": 24.27
+                },
+                "ATR(period=14)": 4.11,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 27.19,
+                    "d": 52.62
+                },
+                "VolumeSMA(period=20)": 38515011.1,
+                "PSAR(step=0.02,max=0.2)": 229.41
+            }
+        },
+        {
+            "date": "2024-10-29",
+            "close": 233.67,
+            "high": 234.325,
+            "low": 232.32,
+            "volume": 35417247,
+            "VWAP": 233.602577,
+            "indicators": {
+                "SMA(period=10)": 233.11,
+                "RSI(period=14)": 57.82,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 2.51
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 230.45,
+                    "upper": 237.98,
+                    "lower": 222.93,
+                    "pb": 0.71
+                },
+                "ADX(period=14)": {
+                    "adx": 17.86,
+                    "pdi": 30.51,
+                    "mdi": 20.96
+                },
+                "ATR(period=14)": 4.11,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 62.98,
+                    "d": 62.66
+                },
+                "VolumeSMA(period=20)": 37805496,
+                "PSAR(step=0.02,max=0.2)": 228.89
+            }
+        },
+        {
+            "date": "2024-10-28",
+            "close": 233.4,
+            "high": 234.73,
+            "low": 232.55,
+            "volume": 36087134,
+            "VWAP": 233.654245,
+            "indicators": {
+                "SMA(period=10)": 233.13,
+                "RSI(period=14)": 57.43,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 2.55
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 230.08,
+                    "upper": 237.67,
+                    "lower": 222.49,
+                    "pb": 0.72
+                },
+                "ADX(period=14)": {
+                    "adx": 17.81,
+                    "pdi": 31.61,
+                    "mdi": 21.3
+                },
+                "ATR(period=14)": 4.27,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 67.69,
+                    "d": 60.73
+                },
+                "VolumeSMA(period=20)": 39198886.05,
+                "PSAR(step=0.02,max=0.2)": 228.34
+            }
+        },
+        {
+            "date": "2024-10-25",
+            "close": 231.41,
+            "high": 233.22,
+            "low": 229.57,
+            "volume": 38802304,
+            "VWAP": 231.703642,
+            "indicators": {
+                "SMA(period=10)": 232.92,
+                "RSI(period=14)": 54.55,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 2.6
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 230.06,
+                    "upper": 237.61,
+                    "lower": 222.51,
+                    "pb": 0.59
+                },
+                "ADX(period=14)": {
+                    "adx": 17.68,
+                    "pdi": 30.79,
+                    "mdi": 22.55
+                },
+                "ATR(period=14)": 4.35,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 57.3,
+                    "d": 57.61
+                },
+                "VolumeSMA(period=20)": 40134198.9,
+                "PSAR(step=0.02,max=0.2)": 227.76
+            }
+        },
+        {
+            "date": "2024-10-24",
+            "close": 230.57,
+            "high": 230.82,
+            "low": 228.41,
+            "volume": 31109503,
+            "VWAP": 230.056502,
+            "indicators": {
+                "SMA(period=10)": 232.53,
+                "RSI(period=14)": 53.31,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 2.82
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 229.88,
+                    "upper": 237.47,
+                    "lower": 222.29,
+                    "pb": 0.55
+                },
+                "ADX(period=14)": {
+                    "adx": 17.85,
+                    "pdi": 28.56,
+                    "mdi": 23.99
+                },
+                "ATR(period=14)": 4.4,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 57.18,
+                    "d": 68.48
+                },
+                "VolumeSMA(period=20)": 39895382.05,
+                "PSAR(step=0.02,max=0.2)": 227.76
+            }
+        },
+        {
+            "date": "2024-10-23",
+            "close": 230.76,
+            "high": 235.144,
+            "low": 227.76,
+            "volume": 52286979,
+            "VWAP": 231.134978,
+            "indicators": {
+                "SMA(period=10)": 232.38,
+                "RSI(period=14)": 53.62,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 3.14
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 229.73,
+                    "upper": 237.38,
+                    "lower": 222.08,
+                    "pb": 0.57
+                },
+                "ADX(period=14)": {
+                    "adx": 18.56,
+                    "pdi": 29.72,
+                    "mdi": 24.96
+                },
+                "ATR(period=14)": 4.55,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 58.35,
+                    "d": 80.67
+                },
+                "VolumeSMA(period=20)": 40171742.25,
+                "PSAR(step=0.02,max=0.2)": 227.56
+            }
+        },
+        {
+            "date": "2024-10-22",
+            "close": 235.86,
+            "high": 236.22,
+            "low": 232.6,
+            "volume": 38846578,
+            "VWAP": 234.775329,
+            "indicators": {
+                "SMA(period=10)": 232.26,
+                "RSI(period=14)": 62.61,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 3.49
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 229.51,
+                    "upper": 237.28,
+                    "lower": 221.74,
+                    "pb": 0.91
+                },
+                "ADX(period=14)": {
+                    "adx": 19.32,
+                    "pdi": 34.05,
+                    "mdi": 19.9
+                },
+                "ATR(period=14)": 4.28,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 89.91,
+                    "d": 89.42
+                },
+                "VolumeSMA(period=20)": 39672829.05,
+                "PSAR(step=0.02,max=0.2)": 226.93
+            }
+        },
+        {
+            "date": "2024-10-21",
+            "close": 236.48,
+            "high": 236.85,
+            "low": 234.45,
+            "volume": 36254470,
+            "VWAP": 235.991167,
+            "indicators": {
+                "SMA(period=10)": 231.25,
+                "RSI(period=14)": 63.81,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 3.37
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 229.08,
+                    "upper": 236.33,
+                    "lower": 221.84,
+                    "pb": 1.01
+                },
+                "ATR(period=14)": 4.31,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 93.75,
+                    "d": 81.77
+                },
+                "VolumeSMA(period=20)": 39908303.55,
+                "PSAR(step=0.02,max=0.2)": 226.26
+            }
+        },
+        {
+            "date": "2024-10-18",
+            "close": 235,
+            "high": 236.18,
+            "low": 234.01,
+            "volume": 46431472,
+            "VWAP": 235.252634,
+            "indicators": {
+                "SMA(period=10)": 229.77,
+                "RSI(period=14)": 62.2,
+                "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": {
+                    "MACD": 3.1
+                },
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 228.58,
+                    "upper": 235.06,
+                    "lower": 222.11,
+                    "pb": 1
+                },
+                "ATR(period=14)": 4.46,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 84.59,
+                    "d": 72.07
+                },
+                "VolumeSMA(period=20)": 40802881.2,
+                "PSAR(step=0.02,max=0.2)": 225.54
+            }
+        },
+        {
+            "date": "2024-10-17",
+            "close": 232.15,
+            "high": 233.85,
+            "low": 230.52,
+            "volume": 32993810,
+            "VWAP": 232.056313,
+            "indicators": {
+                "SMA(period=10)": 228.95,
+                "RSI(period=14)": 58.92,
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 228.24,
+                    "upper": 234.01,
+                    "lower": 222.48,
+                    "pb": 0.84
+                },
+                "ATR(period=14)": 4.49,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 66.96,
+                    "d": 69.7
+                },
+                "VolumeSMA(period=20)": 54415302,
+                "PSAR(step=0.02,max=0.2)": 224.78
+            }
+        },
+        {
+            "date": "2024-10-16",
+            "close": 231.78,
+            "high": 232.12,
+            "low": 229.84,
+            "volume": 34082240,
+            "VWAP": 231.060277,
+            "indicators": {
+                "SMA(period=10)": 228.3,
+                "RSI(period=14)": 58.48,
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 228.08,
+                    "upper": 233.57,
+                    "lower": 222.59,
+                    "pb": 0.84
+                },
+                "ATR(period=14)": 4.58,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 64.67,
+                    "d": 75.86
+                },
+                "VolumeSMA(period=20)": 56104677.25,
+                "PSAR(step=0.02,max=0.2)": 223.96
+            }
+        },
+        {
+            "date": "2024-10-15",
+            "close": 233.85,
+            "high": 237.49,
+            "low": 232.37,
+            "volume": 64751367,
+            "VWAP": 234.893394,
+            "indicators": {
+                "SMA(period=10)": 227.8,
+                "RSI(period=14)": 61.88,
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 227.52,
+                    "upper": 233.61,
+                    "lower": 221.43,
+                    "pb": 1.02
+                },
+                "ATR(period=14)": 4.62,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 77.48,
+                    "d": 72.07
+                },
+                "VolumeSMA(period=20)": 57395311.65,
+                "PSAR(step=0.02,max=0.2)": 223.1
+            }
+        },
+        {
+            "date": "2024-10-14",
+            "close": 231.3,
+            "high": 231.73,
+            "low": 228.6,
+            "volume": 39882085,
+            "VWAP": 230.728854,
+            "indicators": {
+                "SMA(period=10)": 227.04,
+                "RSI(period=14)": 59.17,
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 226.67,
+                    "upper": 233.69,
+                    "lower": 219.65,
+                    "pb": 0.83
+                },
+                "ATR(period=14)": 4.5,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 85.43,
+                    "d": 68.27
+                },
+                "VolumeSMA(period=20)": 56433710.25,
+                "PSAR(step=0.02,max=0.2)": 222.69
+            }
+        },
+        {
+            "date": "2024-10-11",
+            "close": 227.55,
+            "high": 229.41,
+            "low": 227.34,
+            "volume": 31759188,
+            "VWAP": 228.020953,
+            "indicators": {
+                "SMA(period=10)": 227.21,
+                "RSI(period=14)": 54.77,
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 225.92,
+                    "upper": 233.93,
+                    "lower": 217.91,
+                    "pb": 0.6
+                },
+                "ATR(period=14)": 4.53,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 53.3,
+                    "d": 63.06
+                },
+                "VolumeSMA(period=20)": 57407477.35,
+                "PSAR(step=0.02,max=0.2)": 222.25
+            }
+        },
+        {
+            "date": "2024-10-10",
+            "close": 229.04,
+            "high": 229.5,
+            "low": 227.17,
+            "volume": 28183544,
+            "VWAP": 228.576787,
+            "indicators": {
+                "SMA(period=10)": 227.23,
+                "RSI(period=14)": 57.04,
+                "BolingerBands(period=20,stdDev=2)": {
+                    "middle": 225.67,
+                    "upper": 233.77,
+                    "lower": 217.56,
+                    "pb": 0.71
+                },
+                "ATR(period=14)": 4.72,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 66.07,
+                    "d": 57.88
+                },
+                "VolumeSMA(period=20)": 57657848.9,
+                "PSAR(step=0.02,max=0.2)": 221.8
+            }
+        },
+        {
+            "date": "2024-10-09",
+            "close": 229.54,
+            "high": 229.75,
+            "low": 224.83,
+            "volume": 33591091,
+            "VWAP": 228.293881,
+            "indicators": {
+                "SMA(period=10)": 227.08,
+                "RSI(period=14)": 57.78,
+                "ATR(period=14)": 4.9,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 69.81,
+                    "d": 44.75
+                },
+                "PSAR(step=0.02,max=0.2)": 221.33
+            }
+        },
+        {
+            "date": "2024-10-08",
+            "close": 225.77,
+            "high": 225.98,
+            "low": 223.25,
+            "volume": 31855693,
+            "VWAP": 225.170803,
+            "indicators": {
+                "SMA(period=10)": 226.76,
+                "RSI(period=14)": 53.53,
+                "ATR(period=14)": 4.9,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 37.76,
+                    "d": 43.54
+                },
+                "PSAR(step=0.02,max=0.2)": 221.33
+            }
+        },
+        {
+            "date": "2024-10-07",
+            "close": 221.69,
+            "high": 225.69,
+            "low": 221.33,
+            "volume": 39505354,
+            "VWAP": 223.321699,
+            "indicators": {
+                "SMA(period=10)": 226.92,
+                "RSI(period=14)": 48.3,
+                "ATR(period=14)": 4.94,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 26.69,
+                    "d": 51.38
+                },
+                "PSAR(step=0.02,max=0.2)": 221.06
+            }
+        },
+        {
+            "date": "2024-10-04",
+            "close": 226.8,
+            "high": 228,
+            "low": 224.13,
+            "volume": 37345098,
+            "VWAP": 225.839189,
+            "indicators": {
+                "SMA(period=10)": 227.4,
+                "RSI(period=14)": 55.57,
+                "ATR(period=14)": 4.9,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 66.16,
+                    "d": 64.85
+                },
+                "PSAR(step=0.02,max=0.2)": 220.56
+            }
+        },
+        {
+            "date": "2024-10-03",
+            "close": 225.67,
+            "high": 226.805,
+            "low": 223.32,
+            "volume": 34044158,
+            "VWAP": 225.007676,
+            "indicators": {
+                "SMA(period=10)": 227.54,
+                "RSI(period=14)": 54.16,
+                "ATR(period=14)": 4.98,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 61.29
+                },
+                "PSAR(step=0.02,max=0.2)": 220.03
+            }
+        },
+        {
+            "date": "2024-10-02",
+            "close": 226.78,
+            "high": 227.37,
+            "low": 223.02,
+            "volume": 32880605,
+            "VWAP": 226.043352,
+            "indicators": {
+                "SMA(period=10)": 227.86,
+                "Stochastic(period=14,signalPeriod=3)": {
+                    "k": 67.08
+                },
+                "PSAR(step=0.02,max=0.2)": 219.49
+            }
+        },
+        {
+            "date": "2024-10-01",
+            "close": 226.21,
+            "high": 229.65,
+            "low": 223.74,
+            "volume": 63285048,
+            "VWAP": 225.897039,
+            "indicators": {
+                "SMA(period=10)": 227.25,
+                "PSAR(step=0.02,max=0.2)": 218.92
+            }
+        },
+        {
+            "date": "2024-09-30",
+            "close": 233,
+            "high": 233,
+            "low": 229.65,
+            "volume": 54793391,
+            "VWAP": 232.08941,
+            "indicators": {
+                "SMA(period=10)": 226.31,
+                "PSAR(step=0.02,max=0.2)": 218.33
+            }
+        },
+        {
+            "date": "2024-09-27",
+            "close": 227.79,
+            "high": 229.52,
+            "low": 227.3,
+            "volume": 34025967,
+            "VWAP": 228.171141,
+            "indicators": {
+                "SMA(period=10)": 224.64,
+                "PSAR(step=0.02,max=0.2)": 217.72
+            }
+        },
+        {
+            "date": "2024-09-26",
+            "close": 227.52,
+            "high": 228.5,
+            "low": 225.41,
+            "volume": 36636707,
+            "VWAP": 227.261165,
+            "indicators": {
+                "SMA(period=10)": 224.11,
+                "PSAR(step=0.02,max=0.2)": 217.08
+            }
+        },
+        {
+            "date": "2024-09-25",
+            "close": 226.37,
+            "high": 227.29,
+            "low": 224.02,
+            "volume": 42308715,
+            "VWAP": 225.83909,
+            "indicators": {
+                "PSAR(step=0.02,max=0.2)": 216.41
+            }
+        },
+        {
+            "date": "2024-09-24",
+            "close": 227.37,
+            "high": 229.35,
+            "low": 225.73,
+            "volume": 43556068,
+            "VWAP": 227.226809,
+            "indicators": {
+                "PSAR(step=0.02,max=0.2)": 215.72
+            }
+        },
+        {
+            "date": "2024-09-23",
+            "close": 226.47,
+            "high": 229.45,
+            "low": 225.81,
+            "volume": 54146023,
+            "VWAP": 227.036015,
+            "indicators": {
+                "PSAR(step=0.02,max=0.2)": 214.99
+            }
+        },
+        {
+            "date": "2024-09-20",
+            "close": 228.2,
+            "high": 233.09,
+            "low": 227.62,
+            "volume": 318679888,
+            "VWAP": 229.125739,
+            "indicators": {
+                "PSAR(step=0.02,max=0.2)": 214.24
+            }
+        },
+        {
+            "date": "2024-09-19",
+            "close": 228.87,
+            "high": 229.82,
+            "low": 224.63,
+            "volume": 66781315,
+            "VWAP": 228.421566,
+            "indicators": {
+                "PSAR(step=0.02,max=0.2)": 213.92
+            }
+        },
+        {
+            "date": "2024-09-18",
+            "close": 220.69,
+            "high": 222.71,
+            "low": 217.54,
+            "volume": 59894928,
+            "VWAP": 220.443008,
+            "indicators": {
+                "PSAR(step=0.02,max=0.2)": 223.84
+            }
+        },
+        {
+            "date": "2024-09-17",
+            "close": 216.79,
+            "high": 216.9,
+            "low": 214.5,
+            "volume": 45519339,
+            "VWAP": 216.191099,
+            "indicators": {
+                "PSAR(step=0.02,max=0.2)": 224.04
+            }
+        },
+        {
+            "date": "2024-09-16",
+            "close": 216.32,
+            "high": 217.22,
+            "low": 213.92,
+            "volume": 59357427,
+            "VWAP": 215.864965,
+            "indicators": {
+                "PSAR(step=0.02,max=0.2)": 224.04
+            }
+        },
+        {
+            "date": "2024-09-13",
+            "close": 222.5,
+            "high": 224.04,
+            "low": 221.91,
+            "volume": 36766619,
+            "VWAP": 222.922817,
+            "indicators": {
+                "PSAR(step=0.02,max=0.2)": 221.91
+            }
+        }
+    ],
+    "news": [
+        {
+            "updatedAt": "2024-12-07T03:10:21.000Z",
+            "headline": "Apple Working On In-House Modems To Replace Qualcomm, Will Slim Down iPhones Further And Bring Cellular Connectivity To Macs: Report",
+            "summary": "Apple is developing its own modem technology, aiming to replace Qualcomm components and enable slimmer iPhones, foldable devices, and cellular connectivity for Macs and headsets, potentially reshaping its product lineup by 2026."
+        },
+        {
+            "updatedAt": "2024-12-06T21:59:14.000Z",
+            "headline": "Stock Markets Extends Record Highs, US Labor Market Recovers, Bitcoin Hits $100,000: This Week In The Markets",
+            "summary": "The U.S. stock market posted another week of strong performance, with major large-cap indices such as the S&amp;P 500, the Dow Jones and the Nasdaq 100 extending their record highs."
+        },
+        {
+            "updatedAt": "2024-12-06T20:54:41.000Z",
+            "headline": "Apple Unusual Options Activity For December 06",
+            "summary": " "
+        },
+        {
+            "updatedAt": "2024-12-06T17:35:26.000Z",
+            "headline": "10 Information Technology Stocks With Whale Alerts In Today's Session",
+            "summary": " "
+        },
+        {
+            "updatedAt": "2024-12-06T16:34:45.000Z",
+            "headline": "Apple Plans 3-Year Modem Chip Rollout In Bid To Outdo Qualcomm",
+            "summary": ""
+        },
+        {
+            "updatedAt": "2024-12-06T15:34:38.000Z",
+            "headline": "Chipmaker Taiwan Semiconductor Should See Business Grow 20% Fueled By AI Demand: Analyst",
+            "summary": "Taiwan Semiconductor Manufacturing Co (NYSE: TSM) is expected to drive growth in the TAIEX index by 20% due to demand for AI applications and positive corporate earnings. Expansion plans may reduce dependence on China."
+        },
+        {
+            "updatedAt": "2024-12-06T15:00:32.000Z",
+            "headline": "Industry Comparison: Evaluating Apple Against Competitors In Technology Hardware, Storage &amp; Peripherals Industry",
+            "summary": " "
+        },
+        {
+            "updatedAt": "2024-12-06T05:11:22.000Z",
+            "headline": "Amazon Halts Inferentia AI Chip Development To Take On Nvidia: How Trainium Is Shaping Up To Be The New Weapon In AI Chip Wars",
+            "summary": "Amazon has halted the development of its Inferentia AI chip to focus on its Trainium chip, aiming to enhance cost performance and challenge Nvidia&#39;s dominance in the AI chip market, with plans to release a more powerful Trainium3 chip in 2025."
+        },
+        {
+            "updatedAt": "2024-12-06T02:15:32.000Z",
+            "headline": "Tim Cook Explains Why Apple Defied Steve Jobs' Design Philosophy With the iPhone 16's Camera Button, Touches On Retirement Plans: 'I'll Do It Until…'",
+            "summary": "Tim Cook discussed Apple&#39;s strategic evolution, including the iPhone 16&#39;s new camera button, Vision Pro sales, AirPods addressing hearing loss, and his future as CEO, emphasizing user experience, AI foresight, and health democratization."
+        },
+        {
+            "updatedAt": "2024-12-05T18:16:19.000Z",
+            "headline": "Nvidia Partners With Vietnam Government To Develop Advanced AI And More",
+            "summary": "Nvidia founder agreed to open AI research center in Vietnam, acquire VinBrain, and help develop country&#39;s AI infrastructure. Vietnam targets $100B from semiconductors by 2050."
+        },
+        {
+            "updatedAt": "2024-12-05T17:35:12.000Z",
+            "headline": "10 Information Technology Stocks With Whale Alerts In Today's Session",
+            "summary": " "
+        },
+        {
+            "updatedAt": "2024-12-05T17:27:26.000Z",
+            "headline": "On CNBC, Bill Baruch Announced Bought Oracle; Bought Workday; Bought More Apple",
+            "summary": ""
+        },
+        {
+            "updatedAt": "2024-12-05T15:00:27.000Z",
+            "headline": "Investigating Apple's Standing In Technology Hardware, Storage &amp; Peripherals Industry Compared To Competitors",
+            "summary": " "
+        },
+        {
+            "updatedAt": "2024-12-05T12:49:43.000Z",
+            "headline": "Nvidia Could Become Taiwan Semi's Third US Plant Customer, But With A Catch",
+            "summary": "\nNvidia and Taiwan Semiconductor are exploring production of Blackwell AI chips in the former&#39;s Arizona plant to avoid shipping from Taiwan. "
+        },
+        {
+            "updatedAt": "2024-12-05T05:16:09.000Z",
+            "headline": "Jim Cramer Says Google Could Be In Hot Water As Trump Taps Gail Slater For Antitrust Position: 'Not A Friend Of Big Tech'",
+            "summary": "Jim Cramer raised concerns over Gail Slater&#39;s appointment as Trump&#39;s antitrust chief, highlighting her tough stance on Big Tech, which signals potential challenges for companies like Google amid the DOJ&#39;s ongoing crackdown on monopolistic practices."
+        },
+        {
+            "updatedAt": "2024-12-04T20:12:44.000Z",
+            "headline": "Making Money From Crowd Stampede – Palantir Becomes Largest Defense Contractor In Blink Of An Eye",
+            "summary": ""
+        },
+        {
+            "updatedAt": "2024-12-04T17:35:22.000Z",
+            "headline": "10 Information Technology Stocks Whale Activity In Today's Session",
+            "summary": " "
+        },
+        {
+            "updatedAt": "2024-12-04T15:00:34.000Z",
+            "headline": "Investigating Apple's Standing In Technology Hardware, Storage &amp; Peripherals Industry Compared To Competitors",
+            "summary": " "
+        },
+        {
+            "updatedAt": "2024-12-04T14:50:53.000Z",
+            "headline": "Amazon Takes On Nvidia With Cheaper AI Supercomputers, Servers",
+            "summary": "Amazon&#39;s cloud unit showcased new AI chips at Re:Invent event, targeting Nvidia&#39;s market share. Apple and Marvell are customers, Trainium3 coming in 2025."
+        },
+        {
+            "updatedAt": "2024-12-04T14:04:30.000Z",
+            "headline": "'Apple Hits Snags Adapting Baidu's AI Models for China Users' - The Information",
+            "summary": ""
+        }
+    ]
+}
