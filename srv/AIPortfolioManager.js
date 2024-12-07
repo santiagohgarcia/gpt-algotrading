@@ -26,9 +26,9 @@ class AIPortfolioManager {
     const clock = await alpacaService.api.getClock();
     let startAfterMs = 0; //For dev mode, execute instantly
 
-    //For production mode, Calculate miliseconds to next open + 5 min to be sure the market will be open
+    //For production mode, Calculate miliseconds to next open + 2 min to be sure the market will be open
     if (this.config.mode === "production") {
-      startAfterMs = new Date(clock.next_open) - new Date() + 300000 /*5 min AFTER opening */;
+      startAfterMs = new Date(clock.next_open) - new Date() + 120000 /*2 min AFTER opening */;
     }
 
     //Run at opening of market
@@ -149,7 +149,7 @@ class AIPortfolioManager {
 
   async createRebalancingOrders(symbolsData, estimationsForSymbols) {
     //Get total certanty to generate percentages
-    const totalCertainty = estimationsForSymbols.reduce((total, estimate) => total + estimate.certanty, 0);
+    const totalCertainty = estimationsForSymbols.reduce((total, estimate) => total + estimate.certainty, 0);
 
     //Get Current Positions
     const positions = await alpacaService.api.getPositions();
@@ -168,7 +168,7 @@ class AIPortfolioManager {
       const symbol = symbolEstimate.symbol;
       const currentPosition = positions.find(position => position.symbol === symbolEstimate.symbol);
       const currentSymbolData = symbolsData.find(symbolData => symbolData.symbol === symbolEstimate.symbol);
-      const currentSymbolLastPrice = Number(currentPosition?.current_price) || currentSymbolData?.close;
+      const currentSymbolLastPrice = Number(currentPosition?.current_price) || currentSymbolData.latestBars[0]?.close;
       const estimateSide = symbolEstimate.side;
       const estimatePercentage = symbolEstimate.certainty / totalCertainty;
       let currentQty = Number(currentPosition?.qty) || 0;
