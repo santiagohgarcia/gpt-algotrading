@@ -1,6 +1,6 @@
 {
     "symbol": "AAPL",
-    "currentDateTime": "2024-12-07T13:53:52.607Z",
+    "currentDateTime": "2024-12-07T23:55:38.806Z",
     "latestBars": [
         {
             "date": "2024-12-06",
@@ -1616,6 +1616,16 @@
     ],
     "news": [
         {
+            "updatedAt": "2024-12-07T19:30:15.000Z",
+            "headline": "OpenAI's ChatGPT Makes Headway In Search, Threatening Google's Reign",
+            "summary": "ChatGPT is gaining traction in the online search market, potentially challenging Google&#39;s long-established supremacy."
+        },
+        {
+            "updatedAt": "2024-12-07T15:00:20.000Z",
+            "headline": "Benzinga Bulls And Bears: Tesla, GameStop, Nvidia, Bitcoin, And Dogecoin Analyst Flags $1.30-$1.50 As Key Target",
+            "summary": "Benzinga examined the prospects for many investors’ favorite stocks over the last week — here’s a look at some of our top stories."
+        },
+        {
             "updatedAt": "2024-12-07T03:10:21.000Z",
             "headline": "Apple Working On In-House Modems To Replace Qualcomm, Will Slim Down iPhones Further And Bring Cellular Connectivity To Macs: Report",
             "summary": "Apple is developing its own modem technology, aiming to replace Qualcomm components and enable slimmer iPhones, foldable devices, and cellular connectivity for Macs and headsets, potentially reshaping its product lineup by 2026."
@@ -1714,6 +1724,96 @@
             "updatedAt": "2024-12-04T14:04:30.000Z",
             "headline": "'Apple Hits Snags Adapting Baidu's AI Models for China Users' - The Information",
             "summary": ""
+        },
+        {
+            "updatedAt": "2024-12-04T11:38:45.000Z",
+            "headline": "US Stocks Likely To Open Higher As Investors Gear Up For A Historically Strong Month: Wells Fargo Strategists See Trump Policies Setting A Backdrop Where 'Equities Continue To Rally'",
+            "summary": "U.S. stocks could open on a positive note on Wednesday after the averages maintained a cautious stance on Tuesday."
+        },
+        {
+            "updatedAt": "2024-12-04T10:40:08.000Z",
+            "headline": "AAPL Stock Hits New High Despite Sales Slowdown: Tech Bull Says 'Street Is Realizing' iPhone 16 Marks The 'Start Of A Super Cycle' For Apple",
+            "summary": "Apple stock soared to a new 52-week high on Tuesday, closing at $242.65, despite a general market slowdown."
+        },
+        {
+            "updatedAt": "2024-12-04T07:44:25.000Z",
+            "headline": "Apple HomePod Could Be Delayed Until 2025: Top Analyst Predicts The Device Will Play Key Part In iPhone Maker's 'Smart Home Strategy'",
+            "summary": "Apple&#39;s ambitious smart home strategy, centered on a delayed display-equipped HomePod with advanced features, signals a major product repositioning akin to the Apple Watch&#39;s evolution, while Cupertino eyes further expansion with AI-driven devices and smart home integration by 2026."
+        },
+        {
+            "updatedAt": "2024-12-04T06:45:05.000Z",
+            "headline": "S&P 500 Hits Another High As Apple Tops $242 For The First Time: Fear Index Remains In 'Greed' Zone",
+            "summary": " "
+        },
+        {
+            "updatedAt": "2024-12-04T00:01:34.000Z",
+            "headline": "What's Going On With Magnificent 7 Stocks?",
+            "summary": "Aswath Damodaran, a finance professor at NYU&#39;s Stern School of Business, told Bloomberg Television on Monday that he recommends buying any of the Magnificent Seven stocks on dips."
+        },
+        {
+            "updatedAt": "2024-12-03T20:38:09.000Z",
+            "headline": "Amazon Stock Moves Higher As AWS Unveils New AI Advancements: What You Need To Know",
+            "summary": "Amazon.com Inc (NASDAQ:AMZN) shares are trading higher Tuesday. Amazon Web Services made a slew of announcements at its re:Invent 2024 conference, including the general availability of Trainium2, new database capabilities, Bedrock updates and new foundation models. Here&#39;s what you need to know."
+        },
+        {
+            "updatedAt": "2024-12-03T18:31:31.000Z",
+            "headline": "Apple's Multi-Year iPhone Cycle And App Store Dynamics Are Growth Catalysts: Analyst",
+            "summary": "BofA Securities analyst reiterates Buy rating on Apple Inc. with $256 price target. Cites iPhone upgrade cycle, gross margin, and cash flow."
+        },
+        {
+            "updatedAt": "2024-12-03T17:35:11.000Z",
+            "headline": "10 Information Technology Stocks Whale Activity In Today's Session",
+            "summary": " "
+        },
+        {
+            "updatedAt": "2024-12-03T16:43:25.000Z",
+            "headline": "Apple Executive Says Apple Plans To Use AWS Trainum Chips",
+            "summary": ""
+        },
+        {
+            "updatedAt": "2024-12-03T16:16:57.000Z",
+            "headline": "Lack Of Sellers In The Stock Market, China Retaliates Against U.S.",
+            "summary": "\n\n\n\nTo gain an edge, this is what you need to know today."
+        },
+        {
+            "updatedAt": "2024-12-03T16:15:24.000Z",
+            "headline": "Apple Might Have To Commit $1 Billion To Indonesia To Reverse iPhone 16 Ban",
+            "summary": "Apple Inc could invest $1 billion in Indonesia in a week, Reuters cites investment minister. Indonesia plans to raise investment criteria."
+        },
+        {
+            "updatedAt": "2024-12-03T15:00:29.000Z",
+            "headline": "Investigating Apple's Standing In Technology Hardware, Storage &amp; Peripherals Industry Compared To Competitors",
+            "summary": " "
+        },
+        {
+            "updatedAt": "2024-12-03T13:18:54.000Z",
+            "headline": "Taiwan Semi Supplier ASML Reiterates Outlook As Biden's Latest Semiconductor Embargo On China Kicks In",
+            "summary": "ASML stock is unaffected by the latest semiconductor sanctions on China according to CEO. The company expects to meet its 2025 sales targets."
+        },
+        {
+            "updatedAt": "2024-12-03T12:30:12.000Z",
+            "headline": "Ray Dalio's Bridgewater Adds Broadcom, Apple, SMCI In Q3, While Offloading Stake In AI Giant Nvidia And Other Big Tech Companies",
+            "summary": "Bridgewater Associates, the world&#39;s biggest hedge fund, sold top AI-linked stocks like Nvidia, Alphabet, Microsoft, Amazon, and Johnson &amp; Johnson."
+        },
+        {
+            "updatedAt": "2024-12-03T12:15:35.000Z",
+            "headline": "Apple's Foldable iPhone Could Spark Smartphone Market Revival In 2026, Says Expert",
+            "summary": "Apple&#39;s reported plans to launch a foldable iPhone in 2026 could breathe new life into the foldable smartphone market."
+        },
+        {
+            "updatedAt": "2024-12-03T08:51:43.000Z",
+            "headline": "Apple Faces Lawsuit Over Alleged Snooping On Employees' iPhones And Other Devices",
+            "summary": "Apple is facing a legal challenge from one of its own, as an ad tech manager has accused the company of violating employee privacy rights through its policies."
+        },
+        {
+            "updatedAt": "2024-12-03T05:18:24.000Z",
+            "headline": "Cathie Wood-Led Ark's Prediction: AI Will Turn Digital Wallets Into $9 Trillion E-Commerce Powerhouses — Google, Amazon Dominance Set For Disruption?",
+            "summary": "ARK Invest said in November that artificial intelligence-powered digital wallets could revolutionize e-commerce, potentially driving nearly $9 trillion in global online spending by 2030 through the integration of Large Language Models into payment platforms."
+        },
+        {
+            "updatedAt": "2024-12-02T19:26:50.000Z",
+            "headline": "Fintech's New Year Playbook: Kaspi, Affirm, Shopify Set The Tone For 2025",
+            "summary": "Fintech stocks surged in 2024, driven by Q3 results, rate cuts, and post-election tailwinds. Analyst predicts growth for Kaspi, Affirm, and Shopify in 2025."
         }
     ]
 }
