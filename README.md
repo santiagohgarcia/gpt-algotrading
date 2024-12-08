@@ -5,7 +5,7 @@
 1. Run the following command to install dependencies:
 
    ```bash
-   npm start
+   npm install
    ```
 
 ## Environment Variables
