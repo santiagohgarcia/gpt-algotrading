@@ -23,6 +23,8 @@
    DEFAULT_PORTFOLIO_TOTAL=<initial portfolio amount to distribute, e.g., 50000>
    ```
 
+   TODO: Add a database for this
+
    ### Notes:
    - Setting `MODE=development` will run the portfolio redistribution immediately.
    - Setting `MODE=production` will schedule the portfolio redistribution to the next market open + 2 minutes.
