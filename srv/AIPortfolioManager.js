@@ -18,18 +18,37 @@ class AIPortfolioManager {
 
   }
 
+  async start() {
+    switch (this.config.mode) {
+
+      //For PRODUCTION mode, schedule the portfolio rebalancing for the next Open Market window
+      case "production":
+        this.scheduleRebalancePortfolio();
+        break;
+
+      //For DEVELOPMENT mode, run portfolio rebalancing now
+      case "development":
+        this.rebalancePortfolio()
+        break;
+
+      //For BACKTESTING mode, run simulation for several dates
+      case "backtesting":
+
+        break;
+
+      default:
+        break;
+    }
+  }
+
   //This process only runs at the beginning of the NEXT day (next open) Next 9.30AM.
   //Schedule opening the positions at the begining of the day
   async scheduleRebalancePortfolio() {
 
     //Get Clock. 
     const clock = await alpacaService.api.getClock();
-    let startAfterMs = 0; //For dev mode, execute instantly
 
-    //For production mode, Calculate miliseconds to next open + 2 min to be sure the market will be open
-    if (this.config.mode === "production") {
-      startAfterMs = new Date(clock.next_open) - new Date() + 120000 /*2 min AFTER opening */;
-    }
+    const startAfterMs = new Date(clock.next_open) - new Date() + 120000 /*2 min AFTER opening */;
 
     //Run at opening of market
     setTimeout(async () => {
@@ -107,49 +126,56 @@ class AIPortfolioManager {
 
   async rebalancePortfolio() {
 
-    //Get Symbols to analyze
-    const symbols = this.config.symbols;
+    console.log("Rebalancing portfolio...");
 
-    const estimationsForSymbols = [];
-    const symbolsData = [];
-
-    //Loop all symbols
-    for (let index = 0; index < symbols.length; index++) {
-
-      const symbol = symbols[index];
-
-      //Get all data for current symbol from different sources (prices, indicators, news)
-      const symbolData = await this.getAllDataForSymbol(symbol);
-      symbolsData.push(symbolData);
-
-      //Establish wait time according to model. 
-      const waitTime = {
-        "o1-preview": 30000,//Wait at least 30s for the 30K token limit per minute on gpt-4o/o1. This can be removed when we move to Tier2
-        "gpt-4o": 30000,
-        "o1-mini": 15000
-      } || 0;
-
-      //Get estimation for each symbol, with certainty ponderation
-      const estimationForSymbol = await Promise.all([
-        openAIService.getEstimationForSymbol(symbolData),
-        sleep(waitTime) 
-      ]).then(results => results[0]);
-
-      estimationsForSymbols.push(estimationForSymbol);
-
-    }
-
-    //Print all estimations in console
-    console.table(estimationsForSymbols, ["symbol", "side", "certainty"]);
+    //Get symbols data and estimations
+    const symbolDataAndEstimations = await this.getSymbolsDataAndEstimations(this.config.symbols);
 
     //Create Rebalancing Orders in Alpaca
-    await this.createRebalancingOrders(symbolsData, estimationsForSymbols)
+    await this.createRebalancingOrders(symbolDataAndEstimations)
 
   }
 
-  async createRebalancingOrders(symbolsData, estimationsForSymbols) {
+  async getSymbolsDataAndEstimations(symbols) {
+
+    //Get Symbols to analyze
+    const symbolsDataAndEstimations = symbols.map(symbol => {
+      return {
+        symbol: symbol,
+        data: {},
+        estimation: {}
+      }
+    });
+
+    //Loop all symbols
+    for (let index = 0; index < symbolsDataAndEstimations.length; index++) {
+
+      const symbolDataAndEstimation = symbolsDataAndEstimations[index];
+
+      //Get all data for current symbol from different sources (prices, indicators, news)
+      symbolDataAndEstimation.data = await this.getAllDataForSymbol(symbolDataAndEstimation.symbol);
+
+      //Get estimation for each symbol, with certainty ponderation
+      symbolDataAndEstimation.estimation = await Promise.all([
+        openAIService.getEstimationForSymbol(symbolDataAndEstimation.data),
+        sleep({  //Establish wait time according to model. This can be removed when we move to Tier2.
+          "o1-preview": 30000,//Wait at least 30s for the 30K token limit per minute on gpt-4o/o1.
+          "gpt-4o": 30000,
+          "o1-mini": 15000
+        } || 0)
+      ]).then(results => results[0]);
+
+    }
+
+    return symbolsDataAndEstimations;
+
+  }
+
+  async createRebalancingOrders(symbolsDataAndEstimations) {
+
     //Get total certanty to generate percentages
-    const totalCertainty = estimationsForSymbols.reduce((total, estimate) => total + estimate.certainty, 0);
+    const totalCertainty = symbolsDataAndEstimations.reduce(
+      (total, symbolsDataAndEstimation) => total + symbolsDataAndEstimation.estimation.certainty, 0);
 
     //Get Current Positions
     const positions = await alpacaService.api.getPositions();
@@ -162,15 +188,15 @@ class AIPortfolioManager {
 
     //Rebalance Portfolio with Alpaca Orders
     //Loop all estimations
-    for (let index = 0; index < estimationsForSymbols.length; index++) {
+    for (let index = 0; index < symbolsDataAndEstimations.length; index++) {
 
-      const symbolEstimate = estimationsForSymbols[index];
-      const symbol = symbolEstimate.symbol;
-      const currentPosition = positions.find(position => position.symbol === symbolEstimate.symbol);
-      const currentSymbolData = symbolsData.find(symbolData => symbolData.symbol === symbolEstimate.symbol);
+      const symbolDataAndEstimation = symbolsDataAndEstimations[index];
+      const symbol = symbolDataAndEstimation.symbol;
+      const currentPosition = positions.find(position => position.symbol === symbolDataAndEstimation.symbol);
+      const currentSymbolData = symbolDataAndEstimation.data;
       const currentSymbolLastPrice = Number(currentPosition?.current_price) || currentSymbolData.latestBars[0]?.close;
-      const estimateSide = symbolEstimate.side;
-      const estimatePercentage = symbolEstimate.certainty / totalCertainty;
+      const estimateSide = symbolDataAndEstimation.estimation.side;
+      const estimatePercentage = symbolDataAndEstimation.estimation.certainty / totalCertainty;
       let currentQty = Number(currentPosition?.qty) || 0;
 
       console.log(`Creating order for ${symbol}. Current Qty: ${currentQty}`);

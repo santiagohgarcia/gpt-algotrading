@@ -12,34 +12,32 @@ const portfolioManager = new AIPortfolioManager({
   newsTopLimit: Number(process.env.NEWS_TOP_LIMIT),
   symbols: [
     "AAPL",
-    "TSLA",
-    "GOOG",
-    "GOOGL",
-    "BRK.B",
-    "META",
-    "UNH",
-    "XOM",
-    "LLY",
-    "JPM",
-    "MSFT",
-    "JNJ",
-    "V",
-    "PG",
-    "MA",
-    "AVGO",
-    "HD",
-    "CVX",
-    "MRK",
-    "ABBV",
-    "COST",
-    "PEP",
-    "ADBE",
-    "AMZN",
-    "NVDA"
+    // "TSLA",
+    // "GOOG",
+    // "GOOGL",
+    // "BRK.B",
+    // "META",
+    // "UNH",
+    // "XOM",
+    // "LLY",
+    // "JPM",
+    // "MSFT",
+    // "JNJ",
+    // "V",
+    // "PG",
+    // "MA",
+    // "AVGO",
+    // "HD",
+    // "CVX",
+    // "MRK",
+    // "ABBV",
+    // "COST",
+    // "PEP",
+    // "ADBE",
+    // "AMZN",
+    // "NVDA"
   ] //TODO: Get list of stocks from somewhere else
 })
 
-//This is a daily algorithm
-
-//Schedule opining positions at next open of the market
-portfolioManager.scheduleRebalancePortfolio();
+//Start AI Portfolio Manager
+portfolioManager.start();
