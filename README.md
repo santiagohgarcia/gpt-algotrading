@@ -1,5 +1,3 @@
-# gpt-algotrading
-
 ```markdown
 # Get Started
 
