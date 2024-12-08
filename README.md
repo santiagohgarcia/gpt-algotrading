@@ -1,14 +1,11 @@
-# gpt-algotrading
-
-```markdown
-# Get Started
+## Get Started
 
 ## Installation
 
 1. Run the following command to install dependencies:
 
    ```bash
-   npm install
+   npm start
    ```
 
 ## Environment Variables
@@ -37,4 +34,3 @@
    ```bash
    npm start
    ```
-```
