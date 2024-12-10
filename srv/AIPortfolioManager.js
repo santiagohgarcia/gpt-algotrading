@@ -253,7 +253,7 @@ class AIPortfolioManager {
       return symbolDataAndEstimation.estimation;
     });
 
-    console.table(summary, ["symbol", "side", "estimationForDate", "certainty"]);
+    console.table(summary, ["symbol", "side", "estimationForDate", "reasoning", "certainty"]);
   }
 
   async getSymbolsDataAndEstimations(asOfDate) {
@@ -276,14 +276,7 @@ class AIPortfolioManager {
       symbolDataAndEstimation.data = await this.getAllDataForSymbol(symbolDataAndEstimation.symbol, asOfDate);
 
       //Get estimation for each symbol, with certainty ponderation
-      symbolDataAndEstimation.estimation = await Promise.all([
-        openAIService.getEstimationForSymbol(symbolDataAndEstimation.data, asOfDate)
-        // sleep({  //Establish wait time according to model. This can be removed when we move to Tier2.
-        //   "o1-preview": 30000, //Wait at least 30s for the 30K token limit per minute on gpt-4o/o1.
-        //   "gpt-4o": 30000,
-        //   "o1-mini": 15000
-        // } || 0)
-      ]).then(results => results[0]);
+      symbolDataAndEstimation.estimation = await openAIService.getEstimationForSymbol(symbolDataAndEstimation.data, asOfDate);
 
     }
 
