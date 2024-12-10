@@ -11,6 +11,7 @@
     "@sap/cds": "^8.5.0",
     "@sap/cds-dk": "^8.5.0",
     "dotenv": "^16.4.5",
+    "moment-timezone": "^0.5.46",
     "openai": "^4.73.1",
     "technicalindicators": "^3.1.0"
   },

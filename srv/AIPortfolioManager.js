@@ -16,6 +16,50 @@ class AIPortfolioManager {
 
     this.config = config;
 
+    //EST Locale for DATE formatting. We always use NY time when formatting data
+    this.ESTDateLocale = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/New_York',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+
+    //EST Locale for DATE AND TIME formatting. We always use NY time when formatting data
+    this.ESTDateTimeLocale = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/New_York',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    });
+
+  }
+
+  async start() {
+
+    switch (this.config.mode) {
+
+      //For PRODUCTION mode, schedule the portfolio rebalancing for the next Open Market window
+      case "production":
+        this.scheduleRebalancePortfolio();
+        break;
+
+      //For DEVELOPMENT mode, run portfolio rebalancing now
+      case "development":
+        this.rebalancePortfolio(new Date());
+        break;
+
+      //For BACKTESTING mode, run simulation for several dates
+      case "backtesting":
+        this.backtestRebalancePortfolio(this.config.backtestFromDate, this.config.backtestToDate);
+        break;
+
+      default:
+        break;
+    }
   }
 
   //This process only runs at the beginning of the NEXT day (next open) Next 9.30AM.
@@ -24,16 +68,12 @@ class AIPortfolioManager {
 
     //Get Clock. 
     const clock = await alpacaService.api.getClock();
-    let startAfterMs = 0; //For dev mode, execute instantly
 
-    //For production mode, Calculate miliseconds to next open + 2 min to be sure the market will be open
-    if (this.config.mode === "production") {
-      startAfterMs = new Date(clock.next_open) - new Date() + 120000 /*2 min AFTER opening */;
-    }
+    const startAfterMs = new Date(clock.next_open) - new Date() + 120000 /*2 min AFTER opening */;
 
     //Run at opening of market
     setTimeout(async () => {
-      await this.rebalancePortfolio();
+      await this.rebalancePortfolio(new Date());
     }, startAfterMs);
 
     //Log scheduling
@@ -53,14 +93,20 @@ class AIPortfolioManager {
     return result;
   }
 
-  async getAllDataForSymbol(symbol) {
+  async getAllDataForSymbol(symbol, asOfDate) {
 
-    //Calculate begining of time date
+    //Calculate begining of time date for bars query
     const unixEpoch = new Date(0);
+
+    //Last day at midnight for bars query
+    const asOfDatePreviousDayMidnight = new Date(asOfDate);
+    asOfDatePreviousDayMidnight.setDate(asOfDatePreviousDayMidnight.getDate() - 1);
+    asOfDatePreviousDayMidnight.setHours(0, 0, 0, 0);
 
     //Get latest daily bars (Last {barsTopLimit} bars from today)
     const latestBarsAsync = alpacaService.api.getBarsV2(symbol, {
-      start: unixEpoch.toISOString(),
+      start: this.ESTDateLocale.format(unixEpoch),
+      end: this.ESTDateLocale.format(asOfDatePreviousDayMidnight), //Get all bars until last day (estimate will run for current day)
       limit: this.config.barsTopLimit,
       timeframe: alpacaService.api.newTimeframe(1, alpacaService.api.timeframeUnit.DAY),
       sort: "desc"
@@ -71,7 +117,7 @@ class AIPortfolioManager {
 
     for await (const bar of latestBarsAsync) {
       latestBars.push({
-        date: new Date(bar.Timestamp).toISOString().substring(0, 10),
+        date: this.ESTDateLocale.format(new Date(bar.Timestamp)),
         close: bar.ClosePrice,
         high: bar.HighPrice,
         low: bar.LowPrice,
@@ -86,11 +132,14 @@ class AIPortfolioManager {
     //Get Latest News
     const latestNews = (await alpacaService.api.getNews({
       symbols: [symbol],
+      start: unixEpoch.toISOString(),
+      end: asOfDate.toISOString(),
       totalLimit: this.config.newsTopLimit,
-      includeContent: false
+      includeContent: false,
+      sort: "desc"
     })).map(newsArticle => {
       return {
-        updatedAt: new Date(newsArticle.UpdatedAt).toISOString(),
+        datetime: this.ESTDateTimeLocale.format(new Date(newsArticle.UpdatedAt)) + " (New_York Time)",
         headline: newsArticle.Headline,
         summary: newsArticle.Summary
       }
@@ -99,57 +148,154 @@ class AIPortfolioManager {
     //Returns an object with the symbol and the latest news, bars, indicators
     return {
       symbol: symbol,
-      currentDateTime: new Date().toISOString(),
+      currentDate: this.ESTDateLocale.format(asOfDate),
       latestBars: latestBarsWithIndicators,
       news: latestNews
     };
   }
 
-  async rebalancePortfolio() {
+  async rebalancePortfolio(asOfDate) {
 
-    //Get Symbols to analyze
-    const symbols = this.config.symbols;
+    console.log(`Rebalancing portfolio. As of Date: ${asOfDate}`);
 
-    const estimationsForSymbols = [];
-    const symbolsData = [];
+    //Get symbols data and estimations
+    const symbolDataAndEstimations = await this.getSymbolsDataAndEstimations(asOfDate);
 
-    //Loop all symbols
-    for (let index = 0; index < symbols.length; index++) {
-
-      const symbol = symbols[index];
-
-      //Get all data for current symbol from different sources (prices, indicators, news)
-      const symbolData = await this.getAllDataForSymbol(symbol);
-      symbolsData.push(symbolData);
-
-      //Establish wait time according to model. 
-      const waitTime = {
-        "o1-preview": 30000,//Wait at least 30s for the 30K token limit per minute on gpt-4o/o1. This can be removed when we move to Tier2
-        "gpt-4o": 30000,
-        "o1-mini": 15000
-      } || 0;
-
-      //Get estimation for each symbol, with certainty ponderation
-      const estimationForSymbol = await Promise.all([
-        openAIService.getEstimationForSymbol(symbolData),
-        sleep(waitTime) 
-      ]).then(results => results[0]);
-
-      estimationsForSymbols.push(estimationForSymbol);
-
-    }
-
-    //Print all estimations in console
-    console.table(estimationsForSymbols, ["symbol", "side", "certainty"]);
+    //Print summary of estimations
+    this.printSummaryOfEstimations(symbolDataAndEstimations);
 
     //Create Rebalancing Orders in Alpaca
-    await this.createRebalancingOrders(symbolsData, estimationsForSymbols)
+    await this.createRebalancingOrders(symbolDataAndEstimations)
 
   }
 
-  async createRebalancingOrders(symbolsData, estimationsForSymbols) {
+  async backtestRebalancePortfolio(fromDate, toDate) {
+
+    const currentDate = new Date(fromDate);
+    currentDate.setHours(9, 32, 0, 0); //Simulate to run this after market opened every day
+    toDate.setHours(9, 32, 0, 0)
+    let backtestResults = [];
+
+    //Loop from From Date to To Date, estimating in each date and saving results
+    while (currentDate <= toDate) {
+
+      //Skip saturdays and sundays
+      if (!(currentDate.getDay() === 6 || currentDate.getDay() === 0)) {
+
+        //Get symbols data and estimations
+        const symbolDataAndEstimations = await this.getSymbolsDataAndEstimations(currentDate);
+
+        //Print summary of estimations for current date
+        this.printSummaryOfEstimations(symbolDataAndEstimations);
+
+        //Save in a single array all the estimations to then compare with actual day bars
+        backtestResults.push(symbolDataAndEstimations);
+      }
+
+      //Add one day to current Date
+      currentDate.setDate(currentDate.getDate() + 1);
+
+    }
+
+    backtestResults = backtestResults.flat();
+
+    //Get actual bars to compare
+    const realMultiBars = await alpacaService.api.getMultiBarsV2(this.config.symbols, {
+      start: this.ESTDateLocale.format(fromDate),
+      end: this.ESTDateLocale.format(toDate), //Get all bars until last day (estimate will run for current day)
+      timeframe: alpacaService.api.newTimeframe(1, alpacaService.api.timeframeUnit.DAY),
+      sort: "asc"
+    });
+
+    //Calculate Diff and print results as a summary
+    const summaryTable = backtestResults.map((backtestResult) => {
+
+      //Get real bars for this symbol
+      const symbolRealBars = realMultiBars.get(backtestResult.symbol).map(bar => {
+        return {
+          date: this.ESTDateLocale.format(new Date(bar.Timestamp)),
+          close: bar.ClosePrice
+        }
+      });
+
+      //Find current Date Real Bar
+      const currentDateRealBar = symbolRealBars.find(bar => bar.date === backtestResult.estimation.estimationForDate);
+
+      //If there is not current real bar, this day the market was closed. So no backtest result is needed
+      if (!currentDateRealBar) {
+        return null;
+      }
+
+      //Calculate profit/loss
+      return {
+        symbol: backtestResult.symbol,
+        date: backtestResult.estimation.estimationForDate,
+        side: backtestResult.estimation.side,
+        certainty: backtestResult.estimation.certainty,
+        dayBeforeClosePrice: backtestResult.data.latestBars[0].close,
+        currentDayClosePrice: currentDateRealBar.close,
+        reasoning: backtestResult.estimation.reasoning,
+        profitLoss: (currentDateRealBar.close - backtestResult.data.latestBars[0].close) * (backtestResult.estimation.side === "long" ? 1 : -1)
+      };
+
+    }).filter(Boolean);
+
+    console.table(summaryTable);
+
+    const totalPL = summaryTable.reduce((total, st) => total + st.profitLoss, 0);
+    console.log("Total PL:", totalPL);
+
+  }
+
+  printSummaryOfEstimations(symbolDataAndEstimations) {
+    //Print summary of estimations
+    const summary = symbolDataAndEstimations.map(symbolDataAndEstimation => {
+      return symbolDataAndEstimation.estimation;
+    });
+
+    console.table(summary, ["symbol", "side", "estimationForDate", "certainty"]);
+  }
+
+  async getSymbolsDataAndEstimations(asOfDate) {
+
+    //Get Symbols to analyze
+    const symbolsDataAndEstimations = this.config.symbols.map(symbol => {
+      return {
+        symbol: symbol,
+        data: {},
+        estimation: {}
+      }
+    });
+
+    //Loop all symbols
+    for (let index = 0; index < symbolsDataAndEstimations.length; index++) {
+
+      const symbolDataAndEstimation = symbolsDataAndEstimations[index];
+
+      //Get all data for current symbol from different sources (prices, indicators, news)
+      symbolDataAndEstimation.data = await this.getAllDataForSymbol(symbolDataAndEstimation.symbol, asOfDate);
+
+      //Get estimation for each symbol, with certainty ponderation
+      symbolDataAndEstimation.estimation = await Promise.all([
+        openAIService.getEstimationForSymbol(symbolDataAndEstimation.data, asOfDate)
+        // sleep({  //Establish wait time according to model. This can be removed when we move to Tier2.
+        //   "o1-preview": 30000, //Wait at least 30s for the 30K token limit per minute on gpt-4o/o1.
+        //   "gpt-4o": 30000,
+        //   "o1-mini": 15000
+        // } || 0)
+      ]).then(results => results[0]);
+
+    }
+
+    return symbolsDataAndEstimations;
+
+  }
+
+  async createRebalancingOrders(symbolsDataAndEstimations) {
+
     //Get total certanty to generate percentages
-    const totalCertainty = estimationsForSymbols.reduce((total, estimate) => total + estimate.certainty, 0);
+    const totalCertainty = symbolsDataAndEstimations.reduce(
+      (total, symbolsDataAndEstimation) => total + symbolsDataAndEstimation.estimation.certainty, 0);
 
     //Get Current Positions
     const positions = await alpacaService.api.getPositions();
@@ -162,15 +308,15 @@ class AIPortfolioManager {
 
     //Rebalance Portfolio with Alpaca Orders
     //Loop all estimations
-    for (let index = 0; index < estimationsForSymbols.length; index++) {
+    for (let index = 0; index < symbolsDataAndEstimations.length; index++) {
 
-      const symbolEstimate = estimationsForSymbols[index];
-      const symbol = symbolEstimate.symbol;
-      const currentPosition = positions.find(position => position.symbol === symbolEstimate.symbol);
-      const currentSymbolData = symbolsData.find(symbolData => symbolData.symbol === symbolEstimate.symbol);
+      const symbolDataAndEstimation = symbolsDataAndEstimations[index];
+      const symbol = symbolDataAndEstimation.symbol;
+      const currentPosition = positions.find(position => position.symbol === symbolDataAndEstimation.symbol);
+      const currentSymbolData = symbolDataAndEstimation.data;
       const currentSymbolLastPrice = Number(currentPosition?.current_price) || currentSymbolData.latestBars[0]?.close;
-      const estimateSide = symbolEstimate.side;
-      const estimatePercentage = symbolEstimate.certainty / totalCertainty;
+      const estimateSide = symbolDataAndEstimation.estimation.side;
+      const estimatePercentage = symbolDataAndEstimation.estimation.certainty / totalCertainty;
       let currentQty = Number(currentPosition?.qty) || 0;
 
       console.log(`Creating order for ${symbol}. Current Qty: ${currentQty}`);
