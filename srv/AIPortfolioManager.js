@@ -16,9 +16,30 @@ class AIPortfolioManager {
 
     this.config = config;
 
+    //EST Locale for DATE formatting. We always use NY time when formatting data
+    this.ESTDateLocale = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/New_York',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+
+    //EST Locale for DATE AND TIME formatting. We always use NY time when formatting data
+    this.ESTDateTimeLocale = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/New_York',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    });
+
   }
 
   async start() {
+
     switch (this.config.mode) {
 
       //For PRODUCTION mode, schedule the portfolio rebalancing for the next Open Market window
@@ -28,12 +49,12 @@ class AIPortfolioManager {
 
       //For DEVELOPMENT mode, run portfolio rebalancing now
       case "development":
-        this.rebalancePortfolio()
+        this.rebalancePortfolio(new Date());
         break;
 
       //For BACKTESTING mode, run simulation for several dates
       case "backtesting":
-
+        this.backtestRebalancePortfolio(this.config.backtestFromDate, this.config.backtestToDate);
         break;
 
       default:
@@ -52,7 +73,7 @@ class AIPortfolioManager {
 
     //Run at opening of market
     setTimeout(async () => {
-      await this.rebalancePortfolio();
+      await this.rebalancePortfolio(new Date());
     }, startAfterMs);
 
     //Log scheduling
@@ -72,14 +93,20 @@ class AIPortfolioManager {
     return result;
   }
 
-  async getAllDataForSymbol(symbol) {
+  async getAllDataForSymbol(symbol, asOfDate) {
 
-    //Calculate begining of time date
+    //Calculate begining of time date for bars query
     const unixEpoch = new Date(0);
+
+    //Last day at midnight for bars query
+    const asOfDatePreviousDayMidnight = new Date(asOfDate);
+    asOfDatePreviousDayMidnight.setDate(asOfDatePreviousDayMidnight.getDate() - 1);
+    asOfDatePreviousDayMidnight.setHours(0, 0, 0, 0);
 
     //Get latest daily bars (Last {barsTopLimit} bars from today)
     const latestBarsAsync = alpacaService.api.getBarsV2(symbol, {
-      start: unixEpoch.toISOString(),
+      start: this.ESTDateLocale.format(unixEpoch),
+      end: this.ESTDateLocale.format(asOfDatePreviousDayMidnight), //Get all bars until last day (estimate will run for current day)
       limit: this.config.barsTopLimit,
       timeframe: alpacaService.api.newTimeframe(1, alpacaService.api.timeframeUnit.DAY),
       sort: "desc"
@@ -90,7 +117,7 @@ class AIPortfolioManager {
 
     for await (const bar of latestBarsAsync) {
       latestBars.push({
-        date: new Date(bar.Timestamp).toISOString().substring(0, 10),
+        date: this.ESTDateLocale.format(new Date(bar.Timestamp)),
         close: bar.ClosePrice,
         high: bar.HighPrice,
         low: bar.LowPrice,
@@ -105,11 +132,14 @@ class AIPortfolioManager {
     //Get Latest News
     const latestNews = (await alpacaService.api.getNews({
       symbols: [symbol],
+      start: unixEpoch.toISOString(),
+      end: asOfDate.toISOString(),
       totalLimit: this.config.newsTopLimit,
-      includeContent: false
+      includeContent: false,
+      sort: "desc"
     })).map(newsArticle => {
       return {
-        updatedAt: new Date(newsArticle.UpdatedAt).toISOString(),
+        datetime: this.ESTDateTimeLocale.format(new Date(newsArticle.UpdatedAt)) + " (New_York Time)",
         headline: newsArticle.Headline,
         summary: newsArticle.Summary
       }
@@ -118,28 +148,118 @@ class AIPortfolioManager {
     //Returns an object with the symbol and the latest news, bars, indicators
     return {
       symbol: symbol,
-      currentDateTime: new Date().toISOString(),
+      currentDate: this.ESTDateLocale.format(asOfDate),
       latestBars: latestBarsWithIndicators,
       news: latestNews
     };
   }
 
-  async rebalancePortfolio() {
+  async rebalancePortfolio(asOfDate) {
 
-    console.log("Rebalancing portfolio...");
+    console.log(`Rebalancing portfolio. As of Date: ${asOfDate}`);
 
     //Get symbols data and estimations
-    const symbolDataAndEstimations = await this.getSymbolsDataAndEstimations(this.config.symbols);
+    const symbolDataAndEstimations = await this.getSymbolsDataAndEstimations(asOfDate);
+
+    //Print summary of estimations
+    this.printSummaryOfEstimations(symbolDataAndEstimations);
 
     //Create Rebalancing Orders in Alpaca
     await this.createRebalancingOrders(symbolDataAndEstimations)
 
   }
 
-  async getSymbolsDataAndEstimations(symbols) {
+  async backtestRebalancePortfolio(fromDate, toDate) {
+
+    const currentDate = new Date(fromDate);
+    currentDate.setHours(9, 32, 0, 0); //Simulate to run this after market opened every day
+    toDate.setHours(9, 32, 0, 0)
+    let backtestResults = [];
+
+    //Loop from From Date to To Date, estimating in each date and saving results
+    while (currentDate <= toDate) {
+
+      //Skip saturdays and sundays
+      if (!(currentDate.getDay() === 6 || currentDate.getDay() === 0)) {
+
+        //Get symbols data and estimations
+        const symbolDataAndEstimations = await this.getSymbolsDataAndEstimations(currentDate);
+
+        //Print summary of estimations for current date
+        this.printSummaryOfEstimations(symbolDataAndEstimations);
+
+        //Save in a single array all the estimations to then compare with actual day bars
+        backtestResults.push(symbolDataAndEstimations);
+      }
+
+      //Add one day to current Date
+      currentDate.setDate(currentDate.getDate() + 1);
+
+    }
+
+    backtestResults = backtestResults.flat();
+
+    //Get actual bars to compare
+    const realMultiBars = await alpacaService.api.getMultiBarsV2(this.config.symbols, {
+      start: this.ESTDateLocale.format(fromDate),
+      end: this.ESTDateLocale.format(toDate), //Get all bars until last day (estimate will run for current day)
+      timeframe: alpacaService.api.newTimeframe(1, alpacaService.api.timeframeUnit.DAY),
+      sort: "asc"
+    });
+
+    //Calculate Diff and print results as a summary
+    const summaryTable = backtestResults.map((backtestResult) => {
+
+      //Get real bars for this symbol
+      const symbolRealBars = realMultiBars.get(backtestResult.symbol).map(bar => {
+        return {
+          date: this.ESTDateLocale.format(new Date(bar.Timestamp)),
+          close: bar.ClosePrice
+        }
+      });
+
+      //Find current Date Real Bar
+      const currentDateRealBar = symbolRealBars.find(bar => bar.date === backtestResult.estimation.estimationForDate);
+
+      //If there is not current real bar, this day the market was closed. So no backtest result is needed
+      if (!currentDateRealBar) {
+        return null;
+      }
+
+      //Calculate profit/loss
+      return {
+        symbol: backtestResult.symbol,
+        date: backtestResult.estimation.estimationForDate,
+        side: backtestResult.estimation.side,
+        certainty: backtestResult.estimation.certainty,
+        dayBeforeClosePrice: backtestResult.data.latestBars[0].close,
+        currentDayClosePrice: currentDateRealBar.close,
+        reasoning: backtestResult.estimation.reasoning,
+        profitLoss: (currentDateRealBar.close - backtestResult.data.latestBars[0].close) * (backtestResult.estimation.side === "long" ? 1 : -1)
+      };
+
+    }).filter(Boolean);
+
+    console.table(summaryTable);
+
+    const totalPL = summaryTable.reduce((total, st) => total + st.profitLoss, 0);
+    console.log("Total PL:", totalPL);
+
+  }
+
+  printSummaryOfEstimations(symbolDataAndEstimations) {
+    //Print summary of estimations
+    const summary = symbolDataAndEstimations.map(symbolDataAndEstimation => {
+      return symbolDataAndEstimation.estimation;
+    });
+
+    console.table(summary, ["symbol", "side", "estimationForDate", "certainty"]);
+  }
+
+  async getSymbolsDataAndEstimations(asOfDate) {
 
     //Get Symbols to analyze
-    const symbolsDataAndEstimations = symbols.map(symbol => {
+    const symbolsDataAndEstimations = this.config.symbols.map(symbol => {
       return {
         symbol: symbol,
         data: {},
@@ -153,16 +273,16 @@ class AIPortfolioManager {
       const symbolDataAndEstimation = symbolsDataAndEstimations[index];
 
       //Get all data for current symbol from different sources (prices, indicators, news)
-      symbolDataAndEstimation.data = await this.getAllDataForSymbol(symbolDataAndEstimation.symbol);
+      symbolDataAndEstimation.data = await this.getAllDataForSymbol(symbolDataAndEstimation.symbol, asOfDate);
 
       //Get estimation for each symbol, with certainty ponderation
       symbolDataAndEstimation.estimation = await Promise.all([
-        openAIService.getEstimationForSymbol(symbolDataAndEstimation.data),
-        sleep({  //Establish wait time according to model. This can be removed when we move to Tier2.
-          "o1-preview": 30000,//Wait at least 30s for the 30K token limit per minute on gpt-4o/o1.
-          "gpt-4o": 30000,
-          "o1-mini": 15000
-        } || 0)
+        openAIService.getEstimationForSymbol(symbolDataAndEstimation.data, asOfDate)
+        // sleep({  //Establish wait time according to model. This can be removed when we move to Tier2.
+        //   "o1-preview": 30000, //Wait at least 30s for the 30K token limit per minute on gpt-4o/o1.
+        //   "gpt-4o": 30000,
+        //   "o1-mini": 15000
+        // } || 0)
       ]).then(results => results[0]);
 
     }

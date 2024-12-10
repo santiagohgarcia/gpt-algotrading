@@ -15,7 +15,11 @@ const RESPONSE_SCHEMA = {
                 type: "string"
             },
             reasoning: {
-                description: "Reason for the prediction in not more than 1000 characters",
+                description: "Reason for the prediction in not more than 100 characters",
+                type: "string"
+            },
+            estimationForDate: {
+                description: "Date this estimation is done for, in YYYY-MM-DD format",
                 type: "string"
             },
             certainty: {
@@ -110,7 +114,7 @@ class OpenAIService {
 
             let estimation = JSON.parse(jsonResponse);
 
-            console.log("Estimate for received as:", estimation);
+            // console.log("Estimate for received as:", estimation);
 
             return estimation;
 
