@@ -1,6 +1,8 @@
 import AlpacaService from './services/alpaca-service.js';
 import OpenAIService from './services/openai-service.js';
 import IndicatorsService from './services/indicators-service.js';
+import xlsx from "json-as-xlsx"
+import fs from 'fs';
 
 const alpacaService = AlpacaService.getInstance();
 const openAIService = OpenAIService.getInstance();
@@ -54,12 +56,44 @@ class AIPortfolioManager {
 
       //For BACKTESTING mode, run simulation for several dates
       case "backtesting":
-        this.backtestRebalancePortfolio(this.config.backtestFromDate, this.config.backtestToDate);
+
+        let summaryTableResults = await this.backtestRebalancePortfolio(this.config.backtestFromDate, this.config.backtestToDate);
+
+        this.exportBacktestSummaryToExcel(summaryTableResults)
+
         break;
 
       default:
         break;
     }
+  }
+
+  exportBacktestSummaryToExcel(summaryTableResults) {
+    const sheets = [{
+      sheet: "Summary",
+      columns: [
+        { label: "Symbol", value: "symbol" },
+        { label: "Date", value: "date" },
+        { label: "Side", value: "side" },
+        { label: "Certainty", value: "certainty" },
+        { label: "Day Before Close Price", value: "dayBeforeClosePrice" },
+        { label: "Current Day Close Price", value: "currentDayClosePrice" },
+        { label: "Reasoning", value: "reasoning" },
+        { label: "PL", value: "profitLoss" },
+        { label: "Latest Bars (JSON)", value: "latestBars" },
+        { label: "News (JSON)", value: "news" }
+      ],
+      content: summaryTableResults,
+    }];
+
+    const options = {
+      fileName: `backtesting${new Date().getTime()}`,
+      extraLength: 3,
+      writeMode: "writeFile",
+      writeOptions: {}
+    };
+
+    xlsx(sheets, options)
   }
 
   //This process only runs at the beginning of the NEXT day (next open) Next 9.30AM.
@@ -227,6 +261,7 @@ class AIPortfolioManager {
       }
 
       //Calculate profit/loss
+      const profitLoss = (currentDateRealBar.close - backtestResult.data.latestBars[0].close) * (backtestResult.estimation.side === "long" ? 1 : -1)
       return {
         symbol: backtestResult.symbol,
         date: backtestResult.estimation.estimationForDate,
@@ -235,15 +270,19 @@ class AIPortfolioManager {
         dayBeforeClosePrice: backtestResult.data.latestBars[0].close,
         currentDayClosePrice: currentDateRealBar.close,
         reasoning: backtestResult.estimation.reasoning,
-        profitLoss: (currentDateRealBar.close - backtestResult.data.latestBars[0].close) * (backtestResult.estimation.side === "long" ? 1 : -1)
+        latestBars: JSON.stringify(backtestResult.data.latestBars),
+        news: JSON.stringify(backtestResult.data.news),
+        profitLoss: Number(profitLoss.toFixed(2))
       };
 
     }).filter(Boolean);
 
-    console.table(summaryTable);
+    console.table(summaryTable, ["symbol", "date", "side", "certainty", "dayBeforeClosePrice", "currentDayClosePrice", "profitLoss"]);
 
-    const totalPL = summaryTable.reduce((total, st) => total + st.profitLoss, 0);
+    const totalPL = summaryTable.reduce((total, st) => total + Number(st.profitLoss), 0);
     console.log("Total PL:", totalPL);
+
+    return summaryTable;
 
   }
 
@@ -253,7 +292,7 @@ class AIPortfolioManager {
       return symbolDataAndEstimation.estimation;
     });
 
-    console.table(summary, ["symbol", "side", "estimationForDate", "reasoning", "certainty"]);
+    console.log(summary);
   }
 
   async getSymbolsDataAndEstimations(asOfDate) {

@@ -15,7 +15,7 @@ const RESPONSE_SCHEMA = {
                 type: "string"
             },
             reasoning: {
-                description: "Reason for the prediction in not more than 100 characters",
+                description: "Reason for the prediction in not more than 500 characters",
                 type: "string"
             },
             estimationForDate: {
