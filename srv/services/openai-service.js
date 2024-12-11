@@ -66,10 +66,10 @@ class OpenAIService {
         const stringSymbolData = JSON.stringify(symbolData);
 
         //Just print this for one stock to check if the format is correct. 
-        if (symbol === "AAPL") {
-            console.log("Requesting estimation using system text:", systemContextText);
-            console.log("Requesting bracket estimate to GPT with:", symbolData);
-        }
+        // if (symbol === "AAPL") {
+        //     console.log("Requesting estimation using system text:", systemContextText);
+        //     console.log("Requesting bracket estimate to GPT with:", symbolData);
+        // }
 
         //Logic is different for o1-preview as the "System instructions and model configuration are not available yet."
         if (inputs.model === "o1-preview" || inputs.model === "o1-mini") {

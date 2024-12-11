@@ -2,15 +2,10 @@ import AlpacaService from './services/alpaca-service.js';
 import OpenAIService from './services/openai-service.js';
 import IndicatorsService from './services/indicators-service.js';
 import xlsx from "json-as-xlsx"
-import fs from 'fs';
 
 const alpacaService = AlpacaService.getInstance();
 const openAIService = OpenAIService.getInstance();
 const indicatorsService = IndicatorsService.getInstance();
-
-const sleep = (ms) => new Promise((resolve) => {
-  setTimeout(resolve, ms)
-});
 
 class AIPortfolioManager {
 
@@ -42,6 +37,8 @@ class AIPortfolioManager {
 
   async start() {
 
+    let summaryTableResults = [];
+
     switch (this.config.mode) {
 
       //For PRODUCTION mode, schedule the portfolio rebalancing for the next Open Market window
@@ -57,7 +54,7 @@ class AIPortfolioManager {
       //For BACKTESTING mode, run simulation for several dates
       case "backtesting":
 
-        let summaryTableResults = await this.backtestRebalancePortfolio(this.config.backtestFromDate, this.config.backtestToDate);
+        summaryTableResults = await this.backtestRebalancePortfolio(this.config.backtestFromDate, this.config.backtestToDate);
 
         this.exportBacktestSummaryToExcel(summaryTableResults)
 
@@ -78,9 +75,10 @@ class AIPortfolioManager {
         { label: "Certainty", value: "certainty" },
         { label: "Day Before Close Price", value: "dayBeforeClosePrice" },
         { label: "Current Day Close Price", value: "currentDayClosePrice" },
-        { label: "Reasoning", value: "reasoning" },
         { label: "PL", value: "profitLoss" },
-        { label: "Latest Bars (JSON)", value: "latestBars" },
+        { label: "Reasoning", value: "reasoning" },
+        { label: "Latest Minute Bar (JSON)", value: "currentLastMinuteBar" },
+        { label: "Previous Daily Bars (JSON)", value: "previousDailyBars" },
         { label: "News (JSON)", value: "news" }
       ],
       content: summaryTableResults,
@@ -88,7 +86,7 @@ class AIPortfolioManager {
 
     const options = {
       fileName: `backtesting${new Date().getTime()}`,
-      extraLength: 3,
+      // extraLength: 1,
       writeMode: "writeFile",
       writeOptions: {}
     };
@@ -129,6 +127,34 @@ class AIPortfolioManager {
 
   async getAllDataForSymbol(symbol, asOfDate) {
 
+    let latestMinuteBar = {};
+
+    //If this is a backtesting, get the minute bar from the As Of Date exact moment
+    if (this.config.mode === "backtesting") {
+      const latestBarAsync = alpacaService.api.getBarsV2(symbol, {
+        start: asOfDate.toISOString(),
+        end: asOfDate.toISOString(),
+        limit: 1,
+        timeframe: alpacaService.api.newTimeframe(1, alpacaService.api.timeframeUnit.MIN)
+      });
+      for await (const latestBar of latestBarAsync) {
+        latestMinuteBar = latestBar;
+      }
+    } else {
+      //If this is development or production, get the latest bar (this is always a minute bar) of the current moment 
+      //(we can't use the same API as the Hist Bars have 15 min delay in free mode. Ratas.)
+      latestMinuteBar = await alpacaService.api.getLatestBar(symbol);
+    }
+
+    latestMinuteBar = {
+      date: this.ESTDateTimeLocale.format(new Date(latestMinuteBar.Timestamp)) + " (New York Time)",
+      close: latestMinuteBar.ClosePrice,
+      high: latestMinuteBar.HighPrice,
+      low: latestMinuteBar.LowPrice,
+      volume: latestMinuteBar.Volume,
+      VWAP: latestMinuteBar.VWAP
+    };
+
     //Calculate begining of time date for bars query
     const unixEpoch = new Date(0);
 
@@ -138,7 +164,7 @@ class AIPortfolioManager {
     asOfDatePreviousDayMidnight.setHours(0, 0, 0, 0);
 
     //Get latest daily bars (Last {barsTopLimit} bars from today)
-    const latestBarsAsync = alpacaService.api.getBarsV2(symbol, {
+    const previousDailyBarsAsync = alpacaService.api.getBarsV2(symbol, {
       start: this.ESTDateLocale.format(unixEpoch),
       end: this.ESTDateLocale.format(asOfDatePreviousDayMidnight), //Get all bars until last day (estimate will run for current day)
       limit: this.config.barsTopLimit,
@@ -147,10 +173,10 @@ class AIPortfolioManager {
     });
 
     //Convert latest daily bars to array with only necesary fields
-    const latestBars = [];
+    const previousDailyBars = [];
 
-    for await (const bar of latestBarsAsync) {
-      latestBars.push({
+    for await (const bar of previousDailyBarsAsync) {
+      previousDailyBars.push({
         date: this.ESTDateLocale.format(new Date(bar.Timestamp)),
         close: bar.ClosePrice,
         high: bar.HighPrice,
@@ -161,7 +187,7 @@ class AIPortfolioManager {
     }
 
     //Add indicators to bars
-    const latestBarsWithIndicators = await indicatorsService.addIndicatorsToBars(latestBars);
+    const previousDailyBarsWithIndicators = await indicatorsService.addIndicatorsToBars(previousDailyBars);
 
     //Get Latest News
     const latestNews = (await alpacaService.api.getNews({
@@ -173,7 +199,7 @@ class AIPortfolioManager {
       sort: "desc"
     })).map(newsArticle => {
       return {
-        datetime: this.ESTDateTimeLocale.format(new Date(newsArticle.UpdatedAt)) + " (New_York Time)",
+        datetime: this.ESTDateTimeLocale.format(new Date(newsArticle.UpdatedAt)) + " (New York Time)",
         headline: newsArticle.Headline,
         summary: newsArticle.Summary
       }
@@ -182,8 +208,9 @@ class AIPortfolioManager {
     //Returns an object with the symbol and the latest news, bars, indicators
     return {
       symbol: symbol,
-      currentDate: this.ESTDateLocale.format(asOfDate),
-      latestBars: latestBarsWithIndicators,
+      currentTimestamp: this.ESTDateTimeLocale.format(asOfDate)+ " (New York Time)",
+      currentLastMinuteBar: latestMinuteBar,
+      previousDailyBars: previousDailyBarsWithIndicators,
       news: latestNews
     };
   }
@@ -261,16 +288,17 @@ class AIPortfolioManager {
       }
 
       //Calculate profit/loss
-      const profitLoss = (currentDateRealBar.close - backtestResult.data.latestBars[0].close) * (backtestResult.estimation.side === "long" ? 1 : -1)
+      const profitLoss = (currentDateRealBar.close - backtestResult.data.previousDailyBars[0].close) * (backtestResult.estimation.side === "long" ? 1 : -1)
       return {
         symbol: backtestResult.symbol,
         date: backtestResult.estimation.estimationForDate,
         side: backtestResult.estimation.side,
         certainty: backtestResult.estimation.certainty,
-        dayBeforeClosePrice: backtestResult.data.latestBars[0].close,
+        dayBeforeClosePrice: backtestResult.data.previousDailyBars[0].close,
         currentDayClosePrice: currentDateRealBar.close,
         reasoning: backtestResult.estimation.reasoning,
-        latestBars: JSON.stringify(backtestResult.data.latestBars),
+        currentLastMinuteBar: JSON.stringify(backtestResult.data.currentLastMinuteBar),
+        previousDailyBars: JSON.stringify(backtestResult.data.previousDailyBars),
         news: JSON.stringify(backtestResult.data.news),
         profitLoss: Number(profitLoss.toFixed(2))
       };
@@ -346,7 +374,7 @@ class AIPortfolioManager {
       const symbol = symbolDataAndEstimation.symbol;
       const currentPosition = positions.find(position => position.symbol === symbolDataAndEstimation.symbol);
       const currentSymbolData = symbolDataAndEstimation.data;
-      const currentSymbolLastPrice = Number(currentPosition?.current_price) || currentSymbolData.latestBars[0]?.close;
+      const currentSymbolLastPrice = Number(currentPosition?.current_price) || currentSymbolData.previousDailyBars[0]?.close;
       const estimateSide = symbolDataAndEstimation.estimation.side;
       const estimatePercentage = symbolDataAndEstimation.estimation.certainty / totalCertainty;
       let currentQty = Number(currentPosition?.qty) || 0;
