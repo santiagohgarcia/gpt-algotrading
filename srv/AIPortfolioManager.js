@@ -7,6 +7,10 @@ const alpacaService = AlpacaService.getInstance();
 const openAIService = OpenAIService.getInstance();
 const indicatorsService = IndicatorsService.getInstance();
 
+const sleep = (ms) => new Promise((resolve) => {
+  setTimeout(resolve, ms)
+});
+
 class AIPortfolioManager {
 
   constructor(config) {
@@ -127,7 +131,7 @@ class AIPortfolioManager {
 
   async getAllDataForSymbol(symbol, asOfDate) {
 
-    let latestMinuteBar = {};
+    let latestMinuteBar = null;
 
     //If this is a backtesting, get the minute bar from the As Of Date exact moment
     if (this.config.mode === "backtesting") {
@@ -146,14 +150,14 @@ class AIPortfolioManager {
       latestMinuteBar = await alpacaService.api.getLatestBar(symbol);
     }
 
-    latestMinuteBar = {
+    latestMinuteBar = latestMinuteBar ? {
       date: this.ESTDateTimeLocale.format(new Date(latestMinuteBar.Timestamp)) + " (New York Time)",
       close: latestMinuteBar.ClosePrice,
       high: latestMinuteBar.HighPrice,
       low: latestMinuteBar.LowPrice,
       volume: latestMinuteBar.Volume,
       VWAP: latestMinuteBar.VWAP
-    };
+    } : {};
 
     //Calculate begining of time date for bars query
     const unixEpoch = new Date(0);
@@ -195,20 +199,21 @@ class AIPortfolioManager {
       start: unixEpoch.toISOString(),
       end: asOfDate.toISOString(),
       totalLimit: this.config.newsTopLimit,
-      includeContent: false,
+      includeContent: true,
       sort: "desc"
     })).map(newsArticle => {
       return {
         datetime: this.ESTDateTimeLocale.format(new Date(newsArticle.UpdatedAt)) + " (New York Time)",
         headline: newsArticle.Headline,
-        summary: newsArticle.Summary
+        summary: newsArticle.Summary,
+        content: newsArticle.Content
       }
     });
 
     //Returns an object with the symbol and the latest news, bars, indicators
     return {
       symbol: symbol,
-      currentTimestamp: this.ESTDateTimeLocale.format(asOfDate)+ " (New York Time)",
+      currentTimestamp: this.ESTDateTimeLocale.format(asOfDate) + " (New York Time)",
       currentLastMinuteBar: latestMinuteBar,
       previousDailyBars: previousDailyBarsWithIndicators,
       news: latestNews
@@ -287,6 +292,9 @@ class AIPortfolioManager {
         return null;
       }
 
+      //remove content from news, as it now too long 
+      backtestResult.data.news.forEach(newsArticle => delete newsArticle.content)
+
       //Calculate profit/loss
       const profitLoss = (currentDateRealBar.close - backtestResult.data.previousDailyBars[0].close) * (backtestResult.estimation.side === "long" ? 1 : -1)
       return {
@@ -343,7 +351,10 @@ class AIPortfolioManager {
       symbolDataAndEstimation.data = await this.getAllDataForSymbol(symbolDataAndEstimation.symbol, asOfDate);
 
       //Get estimation for each symbol, with certainty ponderation
-      symbolDataAndEstimation.estimation = await openAIService.getEstimationForSymbol(symbolDataAndEstimation.data, asOfDate);
+      symbolDataAndEstimation.estimation = await Promise.all([
+        await openAIService.getEstimationForSymbol(symbolDataAndEstimation.data, asOfDate),
+        sleep(5000) // Make sure each call is done every 5 seconds to avoid reaching limits of tokens per minute
+      ]).then(results => results[0])
 
     }
 
