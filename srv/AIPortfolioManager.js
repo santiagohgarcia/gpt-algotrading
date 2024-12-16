@@ -155,6 +155,7 @@ class AIPortfolioManager {
       close: latestMinuteBar.ClosePrice,
       high: latestMinuteBar.HighPrice,
       low: latestMinuteBar.LowPrice,
+      open: latestMinuteBar.OpenPrice,
       volume: latestMinuteBar.Volume,
       VWAP: latestMinuteBar.VWAP
     } : {};
@@ -185,6 +186,7 @@ class AIPortfolioManager {
         close: bar.ClosePrice,
         high: bar.HighPrice,
         low: bar.LowPrice,
+        open: bar.OpenPrice,
         volume: bar.Volume,
         VWAP: bar.VWAP
       });
