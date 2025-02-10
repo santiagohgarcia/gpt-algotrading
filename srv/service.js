@@ -30,18 +30,18 @@ const portfolioManager = new AIPortfolioManager({
     "MSFT",
     "JNJ",
     "V",
-    // "PG",
-    // "MA",
-    // "AVGO",
-    // "HD",
-    // "CVX",
-    // "MRK",
-    // "ABBV",
-    // "COST",
-    // "PEP",
-    // "ADBE",
-    // "AMZN",
-    // "NVDA"
+    "PG",
+    "MA",
+    "AVGO",
+    "HD",
+    "CVX",
+    "MRK",
+    "ABBV",
+    "COST",
+    "PEP",
+    "ADBE",
+    "AMZN",
+    "NVDA"
   ] //TODO: Get list of stocks from somewhere else
 })
 

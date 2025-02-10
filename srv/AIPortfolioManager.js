@@ -105,7 +105,7 @@ class AIPortfolioManager {
     //Get Clock. 
     const clock = await alpacaService.api.getClock();
 
-    const startAfterMs = new Date(clock.next_open) - new Date() + 120000 /*2 min AFTER opening */;
+    const startAfterMs = new Date(clock.next_open) - new Date() /*+ 120000 2 min AFTER opening */;
 
     //Run at opening of market
     setTimeout(async () => {
@@ -240,8 +240,8 @@ class AIPortfolioManager {
   async backtestRebalancePortfolio(fromDate, toDate) {
 
     const currentDate = new Date(fromDate);
-    currentDate.setHours(9, 32, 0, 0); //Simulate to run this after market opened every day
-    toDate.setHours(9, 32, 0, 0)
+    currentDate.setHours(9, 30, 0, 0); //Simulate to run this after market opened every day
+    toDate.setHours(9, 30, 0, 0)
     let backtestResults = [];
 
     //Loop from From Date to To Date, estimating in each date and saving results
