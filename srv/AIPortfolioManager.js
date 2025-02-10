@@ -212,13 +212,31 @@ class AIPortfolioManager {
       }
     });
 
+    //Get SPY News
+    const SPYNews = (await alpacaService.api.getNews({
+      symbols: ["SPY"],
+      start: unixEpoch.toISOString(),
+      end: asOfDate.toISOString(),
+      totalLimit: this.config.newsTopLimit,
+      includeContent: true,
+      sort: "desc"
+    })).map(newsArticle => {
+      return {
+        datetime: this.ESTDateTimeLocale.format(new Date(newsArticle.UpdatedAt)) + " (New York Time)",
+        headline: newsArticle.Headline,
+        summary: newsArticle.Summary,
+        content: newsArticle.Content
+      }
+    });
+
     //Returns an object with the symbol and the latest news, bars, indicators
     return {
       symbol: symbol,
       currentTimestamp: this.ESTDateTimeLocale.format(asOfDate) + " (New York Time)",
       currentLastMinuteBar: latestMinuteBar,
       previousDailyBars: previousDailyBarsWithIndicators,
-      news: latestNews
+      news: latestNews,
+      SPYNews: SPYNews
     };
   }
 
