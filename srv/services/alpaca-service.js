@@ -62,7 +62,7 @@ class AlpacaService {
       symbol: symbol,
       type: "limit",
       qty: qty,
-      extended_hours: true, //Makes the order executable before 9AM and after 4:30PM. Only works with type=limit 
+      extended_hours: true, //Makes the order executable before 9AM and after 4:30PM. Only works with type=limit and time_in_force=day
       time_in_force: "day",
       limit_price: currentPrice
     });
