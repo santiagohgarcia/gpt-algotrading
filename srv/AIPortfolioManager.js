@@ -105,7 +105,7 @@ class AIPortfolioManager {
     //Get Clock. 
     const clock = await alpacaService.api.getClock();
 
-    const startAfterMs = new Date(clock.next_open) - new Date() + 120000 /*2 min AFTER opening */;
+    const startAfterMs = new Date(clock.next_open) - new Date() /*+ 120000 2 min AFTER opening */;
 
     //Run at opening of market
     setTimeout(async () => {
@@ -240,8 +240,8 @@ class AIPortfolioManager {
   async backtestRebalancePortfolio(fromDate, toDate) {
 
     const currentDate = new Date(fromDate);
-    currentDate.setHours(9, 32, 0, 0); //Simulate to run this after market opened every day
-    toDate.setHours(9, 32, 0, 0)
+    currentDate.setHours(9, 30, 0, 0); //Simulate to run this after market opened every day
+    toDate.setHours(9, 30, 0, 0)
     let backtestResults = [];
 
     //Loop from From Date to To Date, estimating in each date and saving results
@@ -370,6 +370,9 @@ class AIPortfolioManager {
     const totalCertainty = symbolsDataAndEstimations.reduce(
       (total, symbolsDataAndEstimation) => total + symbolsDataAndEstimation.estimation.certainty, 0);
 
+    //Get Latest Quotes
+    const latestTrades = await alpacaService.api.getLatestTrades(symbolsDataAndEstimations.map(s => s.symbol));
+
     //Get Current Positions
     const positions = await alpacaService.api.getPositions();
     let portfolioTotalAmt = this.config.defaultPortfolioTotal;
@@ -385,9 +388,9 @@ class AIPortfolioManager {
 
       const symbolDataAndEstimation = symbolsDataAndEstimations[index];
       const symbol = symbolDataAndEstimation.symbol;
+      const latestTrade = latestTrades.get(symbol);
       const currentPosition = positions.find(position => position.symbol === symbolDataAndEstimation.symbol);
-      const currentSymbolData = symbolDataAndEstimation.data;
-      const currentSymbolLastPrice = Number(currentPosition?.current_price) || currentSymbolData.previousDailyBars[0]?.close;
+      const currentSymbolLastPrice = Number(latestTrade?.Price.toFixed(2));
       const estimateSide = symbolDataAndEstimation.estimation.side;
       const estimatePercentage = symbolDataAndEstimation.estimation.certainty / totalCertainty;
       let currentQty = Number(currentPosition?.qty) || 0;
@@ -428,17 +431,8 @@ class AIPortfolioManager {
 
       //Create Order
       const side = deltaQty > 0 ? "buy" : "sell";
-      await alpacaService.api.createOrder({
-        side: side,
-        symbol: symbol,
-        type: "market",
-        qty: Math.abs(deltaQty),
-        //extended_hours: true, //Makes the order executable before 9AM and after 4:30PM. Only works with type=limit 
-        time_in_force: "day"
-      });
 
-      console.log(`Order Created for ${symbol} (${side}). Qty: ${deltaQty}. Estimated Qty: ${estimateQty}. Position Side: ${estimateSide}`);
-
+      alpacaService.createLimitOrderWithRetry(symbol, Math.abs(deltaQty), side, currentSymbolLastPrice);
     }
 
   }
