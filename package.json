@@ -14,7 +14,8 @@
     "json-as-xlsx": "^2.5.6",
     "moment-timezone": "^0.5.46",
     "openai": "^4.73.1",
-    "technicalindicators": "^3.1.0"
+    "technicalindicators": "^3.1.0",
+    "uuid": "^11.0.5"
   },
   "scripts": {
     "start": "cds run",
