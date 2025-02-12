@@ -77,8 +77,8 @@ class AIPortfolioManager {
         { label: "Date", value: "date" },
         { label: "Side", value: "side" },
         { label: "Certainty", value: "certainty" },
-        { label: "Day Before Close Price", value: "dayBeforeClosePrice" },
-        { label: "Current Day Close Price", value: "currentDayClosePrice" },
+        { label: "Enter Price", value: "enterPrice" },
+        { label: "Exit Price", value: "exitPrice" },
         { label: "PL", value: "profitLoss" },
         { label: "Reasoning", value: "reasoning" },
         { label: "Latest Minute Bar (JSON)", value: "currentLastMinuteBar" },
@@ -286,6 +286,7 @@ class AIPortfolioManager {
     backtestResults = backtestResults.flat();
 
     //Get actual bars to compare
+
     const realMultiBars = await alpacaService.api.getMultiBarsV2(this.config.symbols, {
       start: this.ESTDateLocale.format(fromDate),
       end: this.ESTDateLocale.format(toDate), //Get all bars until last day (estimate will run for current day)
@@ -300,30 +301,36 @@ class AIPortfolioManager {
       const symbolRealBars = realMultiBars.get(backtestResult.symbol).map(bar => {
         return {
           date: this.ESTDateLocale.format(new Date(bar.Timestamp)),
+          open: bar.OpenPrice,
           close: bar.ClosePrice
         }
       });
 
       //Find current Date Real Bar
-      const currentDateRealBar = symbolRealBars.find(bar => bar.date === backtestResult.estimation.estimationForDate);
-
+      const currentDateRealBarIndex = symbolRealBars.findIndex(bar => bar.date === backtestResult.estimation.estimationForDate);
+      const currentDateRealBar = symbolRealBars[currentDateRealBarIndex];
+      const nextDateRealBar = symbolRealBars[currentDateRealBarIndex + 1]; //If next day is not available, give previous day
       //If there is not current real bar, this day the market was closed. So no backtest result is needed
       if (!currentDateRealBar) {
         return null;
       }
 
       //remove content from news, as it now too long 
-      backtestResult.data.news.forEach(newsArticle => delete newsArticle.content)
+      backtestResult.data.news.forEach(newsArticle => delete newsArticle.content);
+
+      let enterPrice = currentDateRealBar.open;
+      let exitPrice = nextDateRealBar ? nextDateRealBar.open : currentDateRealBar.close;
 
       //Calculate profit/loss
-      const profitLoss = (currentDateRealBar.close - backtestResult.data.previousDailyBars[0].close) * (backtestResult.estimation.side === "long" ? 1 : -1)
+      const profitLoss = (exitPrice - enterPrice) * (backtestResult.estimation.side === "long" ? 1 : -1)
+      
       return {
         symbol: backtestResult.symbol,
         date: backtestResult.estimation.estimationForDate,
         side: backtestResult.estimation.side,
         certainty: backtestResult.estimation.certainty,
-        dayBeforeClosePrice: backtestResult.data.previousDailyBars[0].close,
-        currentDayClosePrice: currentDateRealBar.close,
+        enterPrice: enterPrice,
+        exitPrice: exitPrice,
         reasoning: backtestResult.estimation.reasoning,
         currentLastMinuteBar: JSON.stringify(backtestResult.data.currentLastMinuteBar),
         previousDailyBars: JSON.stringify(backtestResult.data.previousDailyBars),
@@ -333,7 +340,7 @@ class AIPortfolioManager {
 
     }).filter(Boolean);
 
-    console.table(summaryTable, ["symbol", "date", "side", "certainty", "dayBeforeClosePrice", "currentDayClosePrice", "profitLoss"]);
+    console.table(summaryTable, ["symbol", "date", "side", "certainty", "enterPrice", "exitPrice", "profitLoss"]);
 
     const totalPL = summaryTable.reduce((total, st) => total + Number(st.profitLoss), 0);
     console.log("Total PL:", totalPL);
