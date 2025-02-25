@@ -17,32 +17,12 @@ const portfolioManager = new AIPortfolioManager({
   barsTopLimit: Number(process.env.BARS_TOP_LIMIT),
   newsTopLimit: Number(process.env.NEWS_TOP_LIMIT),
   symbols: [
-    "AAPL",
-    "TSLA",
-    "GOOG",
-    "GOOGL",
-    "BRK.B",
-    "META",
-    "UNH",
-    "XOM",
-    "LLY",
-    "JPM",
-    "MSFT",
-    "JNJ",
-    "V",
-    "PG",
-    "MA",
-    "AVGO",
-    "HD",
-    "CVX",
-    "MRK",
-    "ABBV",
-    "COST",
-    "PEP",
-    "ADBE",
-    "AMZN",
-    "NVDA"
-  ] //TODO: Get list of stocks from somewhere else
+    "AAPL", "NVDA", "MSFT", "AMZN", "META", "AVGO", "GOOGL", "TSLA", "GOOG", "BRK.B",
+    "JPM", "LLY", "V", "UNH", "XOM", "COST", "MA", "WMT", "NFLX", "HD",
+    "PG", "JNJ", "ABBV", "BAC", "CRM", "ORCL", "WFC", "CVX", "KO", "CSCO",
+    "ACN", "IBM", "PLTR", "PEP", "MCD", "ABT", "DHR", "TXN", "LIN", "NKE" //40
+    // "MRK", "TMO", "NEE", "PM", "UPS", "AMGN", "MDT", "INTC", "ADBE", "AMD"
+  ]
 })
 
 //Start AI Portfolio Manager
