@@ -234,7 +234,7 @@ class AIPortfolioManager {
       symbol: symbol,
       currentTimestamp: this.ESTDateTimeLocale.format(asOfDate) + " (New York Time)",
       currentLastMinuteBar: latestMinuteBar,
-      previousDailyBars: previousDailyBarsWithIndicators,
+      previousDailyBars: previousDailyBarsWithIndicators.slice(0,15),
       news: latestNews,
       SPYNews: SPYNews
     };
@@ -380,7 +380,7 @@ class AIPortfolioManager {
       //Get estimation for each symbol, with certainty ponderation
       symbolDataAndEstimation.estimation = await Promise.all([
         await openAIService.getEstimationForSymbol(symbolDataAndEstimation.data, asOfDate),
-        sleep(5000) // Make sure each call is done every 5 seconds to avoid reaching limits of tokens per minute
+        sleep(1500) // Make sure each call is done every 5 seconds to avoid reaching limits of tokens per minute
       ]).then(results => results[0])
 
     }
