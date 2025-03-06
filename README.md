@@ -18,7 +18,6 @@
    OPENAI_API_KEY=<OpenAI API Key>
    OPENAI_MODEL=<OpenAI model to use, e.g., gpt-4o, gpt-4o-mini>
    MODE=<development or production>
-   NEWS_TOP_LIMIT=<max number of news articles to include in the analysis, e.g., 40>
    BARS_TOP_LIMIT=<max number of daily price bars to include in the analysis, e.g., 60>
    DEFAULT_PORTFOLIO_TOTAL=<initial portfolio amount to distribute, e.g., 50000>
    ```

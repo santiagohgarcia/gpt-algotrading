@@ -200,7 +200,7 @@ class AIPortfolioManager {
       symbols: [symbol],
       start: unixEpoch.toISOString(),
       end: asOfDate.toISOString(),
-      totalLimit: this.config.newsTopLimit,
+      totalLimit: 15,
       includeContent: true,
       sort: "desc"
     })).map(newsArticle => {
@@ -208,7 +208,7 @@ class AIPortfolioManager {
         datetime: this.ESTDateTimeLocale.format(new Date(newsArticle.UpdatedAt)) + " (New York Time)",
         headline: newsArticle.Headline,
         summary: newsArticle.Summary,
-        content: newsArticle.Content
+        content: this.stripHtmlTags(newsArticle.Content)
       }
     });
 
@@ -217,7 +217,7 @@ class AIPortfolioManager {
       symbols: ["SPY"],
       start: unixEpoch.toISOString(),
       end: asOfDate.toISOString(),
-      totalLimit: this.config.newsTopLimit,
+      totalLimit: 6,
       includeContent: true,
       sort: "desc"
     })).map(newsArticle => {
@@ -225,7 +225,7 @@ class AIPortfolioManager {
         datetime: this.ESTDateTimeLocale.format(new Date(newsArticle.UpdatedAt)) + " (New York Time)",
         headline: newsArticle.Headline,
         summary: newsArticle.Summary,
-        content: newsArticle.Content
+        content: this.stripHtmlTags(newsArticle.Content)
       }
     });
 
@@ -238,6 +238,10 @@ class AIPortfolioManager {
       news: latestNews,
       SPYNews: SPYNews
     };
+  }
+
+  stripHtmlTags(str) {
+    return str ? str.replace(/<[^>]*>/g, '') : "";
   }
 
   async rebalancePortfolio(asOfDate) {
