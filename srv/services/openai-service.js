@@ -36,12 +36,20 @@ class OpenAIService {
         // OpenAi instance
         this._openai = new OpenAI();
         this.config = config;
+
+
     }
 
     static getInstance() {
         if (!this.instance) {
+
+            if (process.env.OPENAI_MODEL.includes("search")) {
+                throw "Not possible to use web search models with backtesting";
+            }
+
             this.instance = new OpenAIService({
-                model: process.env.OPENAI_MODEL
+                model: process.env.OPENAI_MODEL,
+                mode: process.env.MODE
             });
         }
         return this.instance;
@@ -98,15 +106,22 @@ class OpenAIService {
             }
         }
 
+        //Add web search parameters for search models
+        if (inputs.model.includes("search")) {
+            inputs.web_search_options = {
+                search_context_size: "high"
+            }
+        }
+
         //Call Completion API
         const completion = await this.api.chat.completions.create(inputs);
 
         //Get response and parse it to JSON object
         let jsonResponse = completion.choices[0].message.content;
         jsonResponse = jsonResponse
-            .replaceAll("```json","")
-            .replaceAll("```","")
-            .replaceAll("\n","")
+            .replaceAll("```json", "")
+            .replaceAll("```", "")
+            .replaceAll("\n", "")
 
         //Get response and parse it to JSON object
         try {
