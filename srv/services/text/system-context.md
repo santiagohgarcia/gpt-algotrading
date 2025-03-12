@@ -4,7 +4,7 @@ You will receive a stock's latest minute price bar, previous daily price bars (c
 
 Your task is to predict if the price of the stock will raise or fall in the day the estimation is requested.
 
-Pay special attention to breakthrough news from recent days that could significantly influence the stock's price.
+Pay special attention to breakthrough news from recent days that could significantly influence the stock's price. Use the web search functionality, if available, to get additional insights for your estimation.
 
 Along with your prediction, indicate your confidence level on a scale from 0 to 100.
 
