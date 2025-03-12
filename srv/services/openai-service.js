@@ -66,9 +66,9 @@ class OpenAIService {
         const stringSymbolData = JSON.stringify(symbolData);
 
         //Just print this for one stock to check if the format is correct. 
-        if (symbol === "AAPL") {
-            console.log("Requesting estimation for AAPL using system text:", symbolData);
-        }
+        // if (symbol === "AAPL") {
+        //     console.log("Requesting estimation for AAPL using system text:", symbolData);
+        // }
 
         //Logic is different for o1-preview as the "System instructions and model configuration are not available yet."
         if (inputs.model === "o1-preview" || inputs.model === "o1-mini") {

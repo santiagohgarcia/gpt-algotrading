@@ -461,7 +461,17 @@ class AIPortfolioManager {
       //Create Order
       const side = deltaQty > 0 ? "buy" : "sell";
 
-      alpacaService.createLimitOrderWithRetry(symbol, Math.abs(deltaQty), side, currentSymbolLastPrice);
+      await alpacaService.api.createOrder({
+        side: side,
+        symbol: symbol,
+        type: "market",
+        qty: Math.abs(deltaQty),
+        //extended_hours: true, //Makes the order executable before 9AM and after 4:30PM. Only works with type=limit 
+        time_in_force: "day"
+      });
+
+      console.log(`Order Created for ${symbol} (${side}). Qty: ${deltaQty}. Estimated Qty: ${estimateQty}. Position Side: ${estimateSide}`);
+      // alpacaService.createLimitOrderWithRetry(symbol, Math.abs(deltaQty), side, currentSymbolLastPrice);
     }
 
   }
