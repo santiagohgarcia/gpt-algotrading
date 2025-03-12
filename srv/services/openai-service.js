@@ -43,7 +43,7 @@ class OpenAIService {
     static getInstance() {
         if (!this.instance) {
 
-            if (process.env.OPENAI_MODEL.includes("search")) {
+            if (process.env.OPENAI_MODEL.includes("search") && process.env.MODE === "backtesting") {
                 throw "Not possible to use web search models with backtesting";
             }
 
