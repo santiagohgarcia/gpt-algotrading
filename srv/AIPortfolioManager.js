@@ -168,11 +168,11 @@ class AIPortfolioManager {
     asOfDatePreviousDayMidnight.setDate(asOfDatePreviousDayMidnight.getDate() - 1);
     asOfDatePreviousDayMidnight.setHours(0, 0, 0, 0);
 
-    //Get latest daily bars (Last {barsTopLimit} bars from today)
+    //Get latest daily bars (Last 210 bars from today)
     const previousDailyBarsAsync = alpacaService.api.getBarsV2(symbol, {
       start: this.ESTDateLocale.format(unixEpoch),
       end: this.ESTDateLocale.format(asOfDatePreviousDayMidnight), //Get all bars until last day (estimate will run for current day)
-      limit: this.config.barsTopLimit,
+      limit: 220,
       timeframe: alpacaService.api.newTimeframe(1, alpacaService.api.timeframeUnit.DAY),
       sort: "desc"
     });
@@ -212,31 +212,13 @@ class AIPortfolioManager {
       }
     });
 
-    //Get SPY News
-    const SPYNews = (await alpacaService.api.getNews({
-      symbols: ["SPY"],
-      start: unixEpoch.toISOString(),
-      end: asOfDate.toISOString(),
-      totalLimit: 6,
-      includeContent: true,
-      sort: "desc"
-    })).map(newsArticle => {
-      return {
-        datetime: this.ESTDateTimeLocale.format(new Date(newsArticle.UpdatedAt)) + " (New York Time)",
-        headline: newsArticle.Headline,
-        summary: newsArticle.Summary,
-        content: this.stripHtmlTags(newsArticle.Content)
-      }
-    });
-
     //Returns an object with the symbol and the latest news, bars, indicators
     return {
       symbol: symbol,
       currentTimestamp: this.ESTDateTimeLocale.format(asOfDate) + " (New York Time)",
       currentLastMinuteBar: latestMinuteBar,
-      previousDailyBars: previousDailyBarsWithIndicators.slice(0,15),
-      news: latestNews,
-      SPYNews: SPYNews
+      previousDailyBars: previousDailyBarsWithIndicators.slice(0, 15),
+      news: latestNews
     };
   }
 
@@ -327,7 +309,7 @@ class AIPortfolioManager {
 
       //Calculate profit/loss
       const profitLoss = (exitPrice - enterPrice) * (backtestResult.estimation.side === "long" ? 1 : -1)
-      
+
       return {
         symbol: backtestResult.symbol,
         date: backtestResult.estimation.estimationForDate,
@@ -373,6 +355,9 @@ class AIPortfolioManager {
       }
     });
 
+    //Add SPY Context
+    const SPYContext = await this.getAllDataForSymbol("SPY", asOfDate);
+
     //Loop all symbols
     for (let index = 0; index < symbolsDataAndEstimations.length; index++) {
 
@@ -380,6 +365,8 @@ class AIPortfolioManager {
 
       //Get all data for current symbol from different sources (prices, indicators, news)
       symbolDataAndEstimation.data = await this.getAllDataForSymbol(symbolDataAndEstimation.symbol, asOfDate);
+
+      symbolDataAndEstimation.data.SPYContext = SPYContext;
 
       //Get estimation for each symbol, with certainty ponderation
       symbolDataAndEstimation.estimation = await Promise.all([

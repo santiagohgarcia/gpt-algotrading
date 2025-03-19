@@ -26,6 +26,16 @@ class IndicatorsService {
             values: []
         });
 
+        const smaLong100 = new SMA({
+            period: 100,
+            values: []
+        });
+
+        const smaLong200 = new SMA({
+            period: 200,
+            values: []
+        });
+
         // RSI (14)
         const rsi = new RSI({
             period: 14,
@@ -99,6 +109,8 @@ class IndicatorsService {
             bar.indicators = {
                 "SMA(period=10)": smaShort.nextValue(bar.close),
                 "SMA(period=50)": smaLong.nextValue(bar.close),
+                "SMA(period=100)": smaLong100.nextValue(bar.close),
+                "SMA(period=200)": smaLong200.nextValue(bar.close),
                 "RSI(period=14)": rsi.nextValue(bar.close),
                 "MACD(fastPeriod=12,slowPeriod=26,signalPeriod=9)": macd.nextValue(bar.close),
                 "BolingerBands(period=20,stdDev=2)": bb.nextValue(bar.close),

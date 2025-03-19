@@ -14,7 +14,6 @@ const portfolioManager = new AIPortfolioManager({
   backtestFromDate: backtestFromDate,
   backtestToDate: backtestToDate,
   defaultPortfolioTotal: Number(process.env.DEFAULT_PORTFOLIO_TOTAL),
-  barsTopLimit: Number(process.env.BARS_TOP_LIMIT),
   symbols: [
     "AAPL", "NVDA", "MSFT", "AMZN", "META", "AVGO", "GOOGL", "TSLA", "GOOG", "BRK.B",
     "JPM", "LLY", "V", "UNH", "XOM", "COST", "MA", "WMT", "NFLX", "HD",
