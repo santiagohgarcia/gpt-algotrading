@@ -15,15 +15,19 @@ const RESPONSE_SCHEMA = {
                 type: "string"
             },
             reasoning: {
-                description: "Reason for the prediction in not more than 1000 characters",
+                description: "Reasoning for this estimation",
                 type: "string"
             },
-            estimationForDate: {
-                description: "Date this estimation is done for, in YYYY-MM-DD format",
-                type: "string"
+            limitPrice: {
+                description: "Price at wich we will enter the position",
+                type: "number"
             },
-            certainty: {
-                description: "Certainty for this prediction expressed as a number from 0 to 100",
+            takeProfitPrice: {
+                description: "Take profit price of the bracket order",
+                type: "number"
+            },
+            stopLossPrice: {
+                description: "Stop loss price of the bracket order",
                 type: "number"
             }
         },
@@ -36,8 +40,6 @@ class OpenAIService {
         // OpenAi instance
         this._openai = new OpenAI();
         this.config = config;
-
-
     }
 
     static getInstance() {
