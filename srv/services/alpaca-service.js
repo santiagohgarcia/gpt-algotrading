@@ -94,6 +94,12 @@ class AlpacaService {
 
   // }
 
+  async getPosition(symbol) {
+    const positions = await this.api.getPositions();
+
+    return positions.find(position => position.symbol === symbol) || null;
+  }
+
   async createBracketOrder(bracketOrder) {
 
     //Create Order

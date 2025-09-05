@@ -86,6 +86,13 @@ class NewsHandler {
 
     news.Symbols.forEach(async symbol => {
 
+      const existingPosition = await alpacaService.getPosition(symbol);
+
+      if(existingPosition){
+        console.log(`EXISTING POSITION FOR ${symbol}. SKIP NEWS.`);
+        return;
+      }
+
       console.log(`News Received for ${symbol}. Getting Data...`);
 
       //Get all data for current symbol from different sources (prices, indicators, news)
