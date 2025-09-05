@@ -79,19 +79,13 @@ class NewsHandler {
     //If market is closed, don't change anything
     const clock = await alpacaService.api.getClock();
 
-    if(!clock.is_open){
+    if (!clock.is_open) {
       console.log("MARKET CLOSED. SKIP NEWS.");
       return;
     }
 
     news.Symbols.forEach(async symbol => {
 
-      const existingPosition = await alpacaService.getPosition(symbol);
-
-      if(existingPosition){
-        console.log(`EXISTING POSITION FOR ${symbol}. SKIP NEWS.`);
-        return;
-      }
 
       console.log(`News Received for ${symbol}. Getting Data...`);
 
@@ -110,10 +104,29 @@ class NewsHandler {
 
       console.log(`Bracket order Received for ${symbol}:`, bracketOrder);
 
+      const existingPosition = await alpacaService.getPosition(symbol);
+
+
+      if (existingPosition) {
+
+        //If there is an existing position in the same direction, keep it and do nothing
+        if (existingPosition.side === bracketOrder.side) {
+
+          console.log(`${existingPosition.side} position already exists for ${symbol}. Keeping it and doing nothing`);
+          return;
+
+        } else { //If the position is in opposite direction, close it and delete all orders before creating a new one
+
+          await alpacaService.closePositionAndWait(symbol);
+
+        }
+
+      }
+
       //Create bracket order
       await alpacaService.createBracketOrder(bracketOrder);
 
-    }); 
+    });
 
   }
 
