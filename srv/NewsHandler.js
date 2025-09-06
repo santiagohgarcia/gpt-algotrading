@@ -78,7 +78,7 @@ class NewsHandler {
       //Set the last News, as they are not available in the historic API real time
       symbolData.lastNews = news;
 
-      console.log(`Data Received for ${symbol}:`, symbolData);
+      console.log(`Data Received for ${symbol}`);
 
       console.log(`Getting bracket order for ${symbol}...`);
 
