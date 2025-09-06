@@ -42,31 +42,13 @@ class NewsHandler {
       //Subscribe to news
       alpacaService.api.news_stream.onNews(this.onNews.bind(this))
 
-      alpacaService.api.news_stream.subscribeForNews([
-        "NVDA",
-        "MSFT",
-        "AAPL",
-        "AMZN",
-        "GOOGL",
-        "META",
-        "AVGO",
-        "BRK.B",
-        "TSLA",
-        "JPM",
-        "V",
-        "LLY",
-        "NFLX",
-        "XOM",
-        "MA",
-        "WMT",
-        "COST",
-        "ORCL",
-        "JNJ",
-        "HD"
-      ]
-      );
+      alpacaService.api.news_stream.subscribeForNews(this.config.symbols);
 
     })
+
+    alpacaService.api.news_stream.onError((error) => {
+      console.log(error);
+    });
 
     alpacaService.api.news_stream.connect();
 
@@ -84,8 +66,9 @@ class NewsHandler {
       return;
     }
 
-    news.Symbols.forEach(async symbol => {
-
+    news.Symbols
+    .filter(symbol => this.config.symbols.includes(symbol))
+    .forEach(async symbol => {
 
       console.log(`News Received for ${symbol}. Getting Data...`);
 
@@ -122,6 +105,9 @@ class NewsHandler {
         }
 
       }
+
+      //Estimate Qty
+      bracketOrder.qty = Math.ceil(this.config.orderDollarSize / latestMinuteBar.close)
 
       //Create bracket order
       await alpacaService.createBracketOrder(bracketOrder);

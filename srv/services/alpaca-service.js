@@ -108,7 +108,7 @@ class AlpacaService {
       side: bracketOrder.side === "long" ? "buy": "sell",  
       symbol: bracketOrder.symbol,
       type: "market",
-      qty: "1",
+      qty: bracketOrder.qty,
       //extended_hours: true, //Not relevant for bracket orders
       time_in_force: "gtc",
       take_profit: {
