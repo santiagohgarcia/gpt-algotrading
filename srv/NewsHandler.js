@@ -100,6 +100,7 @@ class NewsHandler {
 
         } else { //If the position is in opposite direction, close it and delete all orders before creating a new one
 
+          console.log(`position already exists for ${symbol} in different direction. Closing position first.`);
           await alpacaService.closePositionAndWait(symbol);
 
         }
