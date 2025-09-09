@@ -72,6 +72,20 @@ class NewsHandler {
 
       console.log(`News Received for ${symbol}. Getting Data...`);
 
+      const existingPosition = await alpacaService.getPosition(symbol);
+
+      const symbolOpenOrders = await alpacaService.getOpenOrdersFor(symbol);
+
+      if (existingPosition) {
+        console.log(`${existingPosition.side} position already exists for ${symbol}. Keeping it and doing nothing`);
+        return;
+      }
+
+      if(symbolOpenOrders.length > 0) {
+        console.log(`Open orders already exists for ${symbol}. Keeping them and doing nothing`);
+        return;
+      }
+
       //Get all data for current symbol from different sources (prices, indicators, news)
       const symbolData = await this.getAllDataForSymbol(symbol);
 
@@ -86,20 +100,6 @@ class NewsHandler {
       const bracketOrder = await openAIService.getEstimationForSymbol(symbolData);
 
       console.log(`Bracket order Received for ${symbol}:`, bracketOrder);
-
-      const existingPosition = await alpacaService.getPosition(symbol);
-
-      const symbolOpenOrders = await alpacaService.getOpenOrdersFor(symbol);
-
-      if (existingPosition) {
-        console.log(`${existingPosition.side} position already exists for ${symbol}. Keeping it and doing nothing`);
-        return;
-      }
-
-      if(symbolOpenOrders.length > 0) {
-        console.log(`Open orders already exists for ${symbol}. Keeping them and doing nothing`);
-        return;
-      }
 
       //Estimate Qty
       bracketOrder.qty = Math.floor(this.config.orderDollarSize / symbolData.latestMinuteBar.close)
