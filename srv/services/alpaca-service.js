@@ -28,7 +28,7 @@ class AlpacaService {
   }
 
   async getOpenOrdersFor(symbol) {
-    const openOrders = this.api.getOrders({
+    const openOrders = await this.api.getOrders({
       status: "open"
     });
     return openOrders.filter(order => order.symbol = symbol);
