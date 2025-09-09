@@ -27,6 +27,13 @@ class AlpacaService {
     return this._alpaca;
   }
 
+  async getOpenOrdersFor(symbol) {
+    const openOrders = this.api.getOrders({
+      status: "open"
+    });
+    return openOrders.filter(order => order.symbol = symbol);
+  }
+
   async closePositionAndWait(symbol) {
 
     return new Promise((res) => {
