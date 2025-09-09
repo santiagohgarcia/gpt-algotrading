@@ -93,17 +93,17 @@ class NewsHandler {
       if (existingPosition) {
 
         //If there is an existing position in the same direction, keep it and do nothing
-        if (existingPosition.side === bracketOrder.side) {
+        // if (existingPosition.side === bracketOrder.side) {
 
-          console.log(`${existingPosition.side} position already exists for ${symbol}. Keeping it and doing nothing`);
-          return;
+        console.log(`${existingPosition.side} position already exists for ${symbol}. Keeping it and doing nothing`);
+        return;
 
-        } else { //If the position is in opposite direction, close it and delete all orders before creating a new one
+        // } else { //If the position is in opposite direction, close it and delete all orders before creating a new one
 
-          console.log(`position already exists for ${symbol} in different direction. Closing position first.`);
-          await alpacaService.closePositionAndWait(symbol);
+        //   console.log(`position already exists for ${symbol} in different direction. Closing position first.`);
+        //   await alpacaService.closePositionAndWait(symbol);
 
-        }
+        // }
 
       }
 
