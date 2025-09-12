@@ -185,7 +185,7 @@ class NewsHandler {
 
     for await (const bar of previousBarsAsync) {
       previousDailyBars.push({
-        date: this.ESTDateTimeLocale.format(new Date(bar.Timestamp)),
+        date: this.ESTDateLocale.format(new Date(bar.Timestamp)),
         close: bar.ClosePrice,
         high: bar.HighPrice,
         low: bar.LowPrice,
