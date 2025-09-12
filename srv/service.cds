@@ -1,5 +1,6 @@
 using { my.stocks as stocks } from './types/types.cds';
 
+@(requires: 'authenticated-user')
 service GPTService {
 
   /**
