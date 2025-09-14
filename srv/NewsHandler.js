@@ -101,6 +101,11 @@ class NewsHandler {
 
       console.log(`Bracket order Received for ${symbol}:`, bracketOrder);
 
+      if(bracketOrder.side === "none"){
+        console.log(`No action recommended for ${symbol}. Doing nothing.`);
+        return;
+      }
+
       //Estimate Qty
       bracketOrder.qty = Math.floor(this.config.orderDollarSize / symbolData.latestMinuteBar.close)
 

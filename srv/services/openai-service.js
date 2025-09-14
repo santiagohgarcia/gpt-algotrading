@@ -11,14 +11,14 @@ const RESPONSE_SCHEMA = {
                 type: "string"
             },
             side: {
-                description: "Side of the position (long or short)",
+                description: "Side of the position ('long', 'short' or 'none' in case of no trade)",
                 type: "string"
             },
             reasoning: {
                 description: "Reasoning for this estimation",
                 type: "string"
             },
-            limitPrice: {
+            entryPrice: {
                 description: "Price at wich we will enter the position",
                 type: "number"
             },
