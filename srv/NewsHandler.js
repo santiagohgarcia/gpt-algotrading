@@ -60,17 +60,9 @@ class NewsHandler {
 
     console.log(`News Received: `, news);
 
-    //If market is closed, don't change anything
-    // const clock = await alpacaService.api.getClock();
+    const symbols = news.Symbols.filter(symbol => this.config.symbols.includes(symbol))
 
-    // if (!clock.is_open) {
-    //   console.log("MARKET CLOSED. SKIP NEWS.");
-    //   return;
-    // }
-
-    news.Symbols
-    .filter(symbol => this.config.symbols.includes(symbol))
-    .forEach(async symbol => {
+    for (const symbol of symbols) {
 
       console.log(`News Received for ${symbol}. Getting Data...`);
 
@@ -83,7 +75,7 @@ class NewsHandler {
         return;
       }
 
-      if(symbolOpenOrders.length > 0) {
+      if (symbolOpenOrders.length > 0) {
         console.log(`Open orders already exists for ${symbol}. Keeping them and doing nothing`);
         return;
       }
@@ -103,7 +95,7 @@ class NewsHandler {
 
       console.log(`Bracket order Received for ${symbol}:`, bracketOrder);
 
-      if(bracketOrder.side === "none"){
+      if (bracketOrder.side === "none") {
         console.log(`No action recommended for ${symbol}. Doing nothing.`);
         return;
       }
@@ -114,7 +106,7 @@ class NewsHandler {
       //Create bracket order
       await alpacaService.createBracketOrder(bracketOrder);
 
-    });
+    }
 
   }
 
