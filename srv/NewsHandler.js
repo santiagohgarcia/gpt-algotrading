@@ -56,7 +56,7 @@ class NewsHandler {
 
   async onNews(news) {
 
-    news.content = this.stripHtmlTags(news.content);
+    news.Content = this.stripHtmlTags(news.Content);
 
     console.log(`News Received: `, news);
 
