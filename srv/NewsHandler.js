@@ -91,6 +91,7 @@ class NewsHandler {
 
       //Set the last News, as they are not available in the historic API real time
       symbolData.lastNews = news;
+      symbolData.lastNews.content = this.stripHtmlTags(symbolData.lastNews.content);
 
       console.log(`Data Received for ${symbol}`);
 
