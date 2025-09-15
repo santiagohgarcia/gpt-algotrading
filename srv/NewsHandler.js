@@ -56,6 +56,8 @@ class NewsHandler {
 
   async onNews(news) {
 
+    news.content = this.stripHtmlTags(news.content);
+
     console.log(`News Received: `, news);
 
     //If market is closed, don't change anything
@@ -91,7 +93,6 @@ class NewsHandler {
 
       //Set the last News, as they are not available in the historic API real time
       symbolData.lastNews = news;
-      symbolData.lastNews.content = this.stripHtmlTags(symbolData.lastNews.content);
 
       console.log(`Data Received for ${symbol}`);
 
