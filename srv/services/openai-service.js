@@ -15,7 +15,7 @@ const RESPONSE_SCHEMA = {
                 type: "string"
             },
             reasoning: {
-                description: "Reasoning for this estimation",
+                description: "Reasoning for this estimation including web search sources used",
                 type: "string"
             },
             entryPrice: {
@@ -38,7 +38,10 @@ const RESPONSE_SCHEMA = {
 class OpenAIService {
     constructor(config) {
         // OpenAi instance
-        this._openai = new OpenAI();
+        this._openai = new OpenAI({
+            apiKey: config.openAIAPIKey,
+            baseURL: config.openAIAPIBaseURL
+        });
         this.config = config;
     }
 
@@ -51,7 +54,8 @@ class OpenAIService {
 
             this.instance = new OpenAIService({
                 model: process.env.OPENAI_MODEL,
-                mode: process.env.MODE
+                openAIAPIKey: process.env.OPENAI_API_KEY,
+                openAIAPIBaseURL: process.env.OPENAI_API_BASE_URL
             });
         }
         return this.instance;
@@ -75,46 +79,23 @@ class OpenAIService {
         //Gets Symbol Data in Text format to send to AI
         const stringSymbolData = JSON.stringify(symbolData);
 
-        //Just print this for one stock to check if the format is correct. 
-        // if (symbol === "AAPL") {
-        //     console.log("Requesting estimation for AAPL using system text:", symbolData);
-        // }
-
         //Logic is different for o1-preview as the "System instructions and model configuration are not available yet."
-        if (inputs.model === "o1-preview" || inputs.model === "o1-mini") {
-            const sFullMessage = `${systemContextText}\n\n` +
-                `Give your responses in the following JSON format schema:\n${JSON.stringify(RESPONSE_SCHEMA)}\n\n` +
-                `The stock data is the following (in JSON format):\n\n${stringSymbolData}\n\n`;
-            inputs.messages = [
-                {
-                    role: "user",
-                    content: sFullMessage
-                }
-            ]
-        } else { //Other models can have system instructions and response format
-            inputs.messages = [
-                {
-                    role: "system",
-                    content: systemContextText
-                },
-                {
-                    role: "user",
-                    content: stringSymbolData,
-                },
-            ];
-            inputs.response_format = {
-                type: "json_schema",
-                json_schema: RESPONSE_SCHEMA
-            }
-        }
+        inputs.messages = [
+            {
+                role: "system",
+                content: systemContextText
+            },
+            {
+                role: "user",
+                content: stringSymbolData,
+            },
+        ];
 
-        //Add web search parameters for search models
-        if (inputs.model.includes("search")) {
-            inputs.web_search_options = {
-                search_context_size: "high"
-            }
+        inputs.response_format = {
+            type: "json_schema",
+            json_schema: RESPONSE_SCHEMA
         }
-
+        
         //Call Completion API
         const completion = await this.api.chat.completions.create(inputs);
 
@@ -130,7 +111,7 @@ class OpenAIService {
 
             let estimation = JSON.parse(jsonResponse);
 
-            // console.log("Estimate for received as:", estimation);
+            estimation.searchResults = completion.search_results;
 
             return estimation;
 
